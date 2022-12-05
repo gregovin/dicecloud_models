@@ -32,7 +32,11 @@ pub struct FlatProp{
     #[serde(default)]
     pub removed_at: Option<String>,
     #[serde(default)]
-    removed_with: Option<String>
+    removed_with: Option<String>,
+    #[serde(default)]
+    dirty: Option<bool>,
+    #[serde(default,rename="_migrationError")]
+    migration_error: Vec<String>
 }
 impl PartialOrd for FlatProp{
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
