@@ -1,15 +1,16 @@
-First, we have PropVal, which can be an integer, decimal, bool, or string
+## PropVal
+can take on a value of either a bool, number, decimal, or integer
 
-### ValWrap
-- value: PropVal
+## ValWrap
+- value: [PropVal](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#propval)
 
 ## Calculation
 - calculation: String,
 - _key: String,
 - type: String,
 - hash: integer,
-- parse_node: ParseNode,(will deal with this at the end as it gets into AST stuff)
-- errors: Array of ParseError,
+- parse_node: [ParseNode](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#parsenode),
+- errors: Array of [ParseError](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#parseerror),
 - value: PropVal
 
 ### ParseError
@@ -17,66 +18,54 @@ First, we have PropVal, which can be an integer, decimal, bool, or string
 - pub message: String
 
 ## ExtendedCalc
-same as Calculation, but with the following fields:
-- baseValue*: PropVal,
-- effects*: Array of Effect
+same as [Calculation](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#calculation), but with the following fields:
+- baseValue*: [PropVal](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#propval),
+- effects*: Array of [Effect](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/additional_types.md#effect)
 
-## CalculatedText
-- text: String,
-- value: String,
-- hash: integer,
-- inlineCalculations: Array of Calculation
-
-## Effect
-- _id: String,
-- name: String,
-- operation: String,
-- amount:ValWrap,
-- type*: String
-
-### ParseNode has a parseType which determines which fields it has
-#### parseType="accessor"
+## ParseNode
+has a parseType which determines which fields it has
+### parseType="accessor"
 - path: Array of String,
 - name: String
-#### parseType="array"
-- values: Array of ParseNode
+### parseType="array"
+- values: Array of[ParseNode](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#parsenode)
 
-#### parseType="call"
+### parseType="call"
 - functionName: String,
-- args: Array of ParseNode
+- args: Array of[ParseNode](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#parsenode)
 
-#### parseType="constant"
+### parseType="constant"
 - valueType: String,
 - value: PropVal
 
-#### parseType="if"
-- condition: ParseNode,
-- consequent: ParseNode,
-- alternative: ParseNode
+### parseType="if"
+- condition:[ParseNode](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#parsenode),
+- consequent:[ParseNode](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#parsenode),
+- alternative:[ParseNode](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#parsenode)
 
-#### parseType="index"
-- array: ParseNode,
-- index: ParseNode
+### parseType="index"
+- array:[ParseNode](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#parsenode),
+- index:[ParseNode](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#parsenode)
 
-#### parseType="operator"
-- left: ParseNode,
-- right: ParseNode,
+### parseType="operator"
+- left:[ParseNode](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#parsenode),
+- right:[ParseNode](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#parsenode),
 - operator: String,
 - fn: String
 
-#### parseType="not"
-- right: ParseNode
+### parseType="not"
+- right:[ParseNode](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#parsenode)
 
-#### parseType="parenthesis"
-- content: ParseNode
+### parseType="parenthesis"
+- content:[ParseNode](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#parsenode)
 
-#### parseType="roll"
-- left: ParseNode,
-- right: ParseNode
+### parseType="roll"
+- left:[ParseNode](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#parsenode),
+- right:[ParseNode](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#parsenode)
 
-#### parseType="symbol"
+### parseType="symbol"
 - name: String
 
-#### parseType="unaryOperator"
+### parseType="unaryOperator"
 - operator: String,
-- right: ParseNode
+- right:[ParseNode](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#parsenode)
