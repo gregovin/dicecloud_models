@@ -2,9 +2,10 @@ Properties with a * are optional
 # A character in dicecloud has the following properties(every time)
 - creatures: an array of [CreatureInfo](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/overal_structure.md#creatureinfo-consists-of)
 - creatureProperties: an array of [FlatProp](Property_structure.md)
-- creatureVariables: an array of CreatureVariables
+- creatureVariables: an array of CreatureVariables //structure not fully understood yet
 
-## CreatureInfo consists of
+where
+## CreatureInfo
 - id: String,
 - owner: String,
 - name: String,
@@ -12,18 +13,19 @@ Properties with a * are optional
 - alignment: String,
 - allowedLibraries: array of String
 - allowedLibrary_collections: array of String
-- deathSave: DeathSaveInfo,
-- denormalizedStats: DenormalizedStats,
+- deathSave: [DeathSaveInfo](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/overal_structure.md#deathsaveinfo),
+- denormalizedStats: [DenormalizedStats](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/overal_structure.md#denormalizedstats),
 - type: String,
-//damageMultipliers and variables properties omitted
-- settings*: Settings
+- //damageMultipliers and variables properties omitted
+- settings*: [Settings](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/overal_structure.md#settings)
 - readers: array of String
 - writers: array of String
 - public: bool,
 - picture*: String,
 - avatarPicture*: String
 
-### DeathSaveInfo consists of
+where
+### DeathSaveInfo
 - pass: integer(unsigned),
 - fail: integer(unsigned),
 - canDeathSave*: bool,
