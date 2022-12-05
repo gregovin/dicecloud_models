@@ -1,6 +1,6 @@
 use crate::data_models::generic_model::*;
 use serde::{Serialize,Deserialize};
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize,PartialEq,Debug)]
 #[serde(rename_all="camelCase")]
 pub struct FlatProp{
     #[serde(rename="_id")]
@@ -36,5 +36,5 @@ pub struct FlatProp{
 #[serde(rename_all="camelCase")]
 pub struct Character{
     creatures: Vec<CreatureInfo>,
-    creature_properties:  Vec<FlatProp>,
+    creature_properties: Vec<FlatProp>
 }
