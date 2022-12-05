@@ -1,14 +1,16 @@
-# FlatProp represents a property in the JSON. Properties have(or can have) varying components
+# FlatProp
+represents a property in the JSON. Properties have(or can have) varying components
+
 All properties have
 - _id: String,
 - type: String,
-- tags: Vec<String>,  
+- tags: Array of String,  
 - order: integer(unsigned),  
-- parent: Identifier,  
-- ancestors: Array of Identifier,  
+- parent: [Identifier](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/additional_types.md#identifier),  
+- ancestors: Array of [Identifier](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/additional_types.md#identifier),  
 - libraryNodeId*: String,  
 - color*: String,  
-- icon*: Icon,  
+- icon*: [Icon](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/additional_types.md#icon),  
 - libraryTags*: array of string,  
 - deactivatedByToggle*: bool,  
 - deactivatedByAncestor*: bool,  
@@ -17,19 +19,11 @@ All properties have
 - removedAt*: String,  
 - removedWith*: String  
 
-## Identifier
-- id: String,  
-- collection: String  
-
-## Icon
-- name: String,
-- shape: String
-
 The following properties have additional fields as follows
 ## Action
 - actionType: String
 - target: String
-- resources: Resource
+- resources: [Resource](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/additional_types.md#resource)
 - name: String
 - summary*: CalculatedText
 - description*: CalculatedText 
@@ -257,7 +251,7 @@ contents_weight*: decimal
 - name: String,
 - actionType: String,
 - target: String,
-- resources: Resource,
+- resources: [Resource](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/additional_types.md#resource),
 - castingTime: String,
 - duration: String,
 - level: integer,
