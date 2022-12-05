@@ -1,6 +1,8 @@
+use std::collections::HashMap;
+
 use crate::data_models::generic_model::*;
 use serde::{Serialize,Deserialize};
-#[derive(Serialize, Deserialize,PartialEq,Debug)]
+#[derive(Serialize, Deserialize,PartialEq,Debug,Default)]
 #[serde(rename_all="camelCase")]
 pub struct FlatProp{
     #[serde(rename="_id")]
@@ -32,9 +34,20 @@ pub struct FlatProp{
     #[serde(default)]
     removed_with: Option<String>
 }
-#[derive(Serialize, Deserialize,PartialEq,Default)]
+impl PartialOrd for FlatProp{
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        self.order.partial_cmp(&other.order)
+    }
+}
+#[derive(Serialize, Deserialize,PartialEq)]
 #[serde(rename_all="camelCase")]
 pub struct Character{
     creatures: Vec<CreatureInfo>,
-    creature_properties: Vec<FlatProp>
+    creature_properties: Vec<FlatProp>,
+    creature_variables: HashMap<String, serde_json::Value>
+}
+impl Default for Character{
+    fn default() -> Self {
+        Character { creatures: vec![], creature_properties: vec![], creature_variables: HashMap::new() }
+    }
 }

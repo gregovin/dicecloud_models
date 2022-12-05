@@ -168,6 +168,14 @@ pub struct ConsumedResource{
 }
 #[derive(Serialize,Deserialize,PartialEq,Debug,Default)]
 #[serde(rename_all="camelCase")]
+pub struct ExtraTag{
+    #[serde(rename="_id")]
+    id: String,
+    operation: String,
+    tags: Vec<String>
+}
+#[derive(Serialize,Deserialize,PartialEq,Debug,Default)]
+#[serde(rename_all="camelCase")]
 pub struct Resource{
     items_consumed: Vec<ConsumedItem>,
     attributes_consumed: Vec<ConsumedResource>,
@@ -190,8 +198,8 @@ pub enum BranchType{
     SuccessfulSave{},
     Random{}
 }
-#[derive(Serialize,Deserialize,PartialEq,Debug)]
-#[serde(rename_all="camelCase",tag="type")]
+#[derive(Serialize,Deserialize,PartialEq,Debug,Default)]
+#[serde(rename_all="camelCase")]
 pub struct PointBuyRow{
     #[serde(rename="_id")]
     id: String,
@@ -199,6 +207,27 @@ pub struct PointBuyRow{
     variable_name: String,
     value: i64,
     spent: i64
+}
+#[derive(Serialize,Deserialize,PartialEq,Debug)]
+#[serde(rename_all="camelCase",tag="attributeType")]
+pub enum AttributeType{
+    Ability{modifier: i64},
+    HealthBar{#[serde(rename="healthBarColorMid",default)] health_bar_color_mid: Option<String>,
+        #[serde(rename="healthBarColorLow",default)] health_bar_color_low: Option<String>,
+        #[serde(rename="healthBarDamageOrder",default)] health_bar_damage_order: Option<i64>,
+        #[serde(rename="healthBarHealingOrder",default)] health_bar_healing_order: Option<i64>},
+    HitDice{#[serde(rename="hitDiceSize")] hit_dice_size: String,
+        #[serde(rename="constitutionMod")] constitution_mod: i64},
+    Modifier{},
+    Resource{},
+    Stat{},
+    SpellSlot{#[serde(rename="spellSlotLevel",default)] spell_slot_level: Option<Calculation>},
+    Utility{}   
+}
+impl Default for AttributeType{
+    fn default() -> Self {
+        Self::Utility {}
+    }
 }
 #[derive(Serialize,Deserialize,PartialEq,Debug)]
 #[serde(rename_all="camelCase",tag="type")]
@@ -210,10 +239,14 @@ pub enum PropType{
         #[serde(default,rename="attackRoll")] attack_roll: Option<ExtendedCalc>},
     Adjustment{target: String,operation: String, stat: String, amount: Calculation},//attribute damage for some reason
     Attribute{name: String, #[serde(rename="variableName")] variable_name: String, 
-        #[serde(rename="attributeType")] attribute_type: String,
+        #[serde(flatten)] attribute_type: AttributeType,#[serde(default)] description: Option<CalculatedText>,
         #[serde(rename="baseValue")] base_value: Calculation,total: PropVal, value: PropVal,
         #[serde(default)] damage: Option<PropVal>, effects: Vec<Effect>,
-        #[serde(default)] modifier: Option<i64>},
+        #[serde(default)] reset:Option<String>,
+        #[serde(rename="ignoreLowerLimit",default)] ignore_lower_limit: bool,
+        #[serde(rename="ignoreUpperLimit",default)] ignore_upper_limit: bool,
+        #[serde(rename="hideWhenValueZero",default)] hide_when_value_zero: bool,
+        #[serde(rename="hideWhenTotalZero",default)] hide_when_total_zero: bool},
     Buff{target: String, name: String, description: CalculatedText,
         #[serde(rename="skipCrystalization",default)]skip_crystalization: Option<bool>,
         #[serde(rename="hideRemoveButton",default)]hide_remove_button:Option<bool>,
@@ -223,7 +256,7 @@ pub enum PropType{
         #[serde(default)]silent:bool},
     Branch{#[serde(flatten)] branch_type: BranchType},
     Class{name: String, #[serde(rename="variableName")] variable_name: String,
-        #[serde(rename="extraTags")] extra_tags: Vec<String>,
+        #[serde(rename="extraTags")] extra_tags: Vec<ExtraTag>,
         #[serde(rename="slotCondition",default)] slot_condition: Option<Calculation>,
         level: i64},
     ClassLevel{name: String, level: i64, #[serde(rename="variableName")] variable_name: String},
@@ -242,7 +275,7 @@ pub enum PropType{
     Effect{name: String, operation: String,stats: Vec<String>,amount: Calculation,
         #[serde(rename="targetByTags",default)] target_by_tags: bool,
         #[serde(rename="targetTags",default)] target_tags: Option<Vec<String>>,
-        #[serde(rename="extraTags",default)] extra_tags: Vec<String>,
+        #[serde(rename="extraTags",default)] extra_tags: Vec<ExtraTag>,
         #[serde(rename="targetField",default)] target_field: Option<String>},
     Feature{name: String, #[serde(default)] sumary: Option<CalculatedText>,
         #[serde(default)] description: Option<CalculatedText>},
@@ -267,7 +300,7 @@ pub enum PropType{
         #[serde(rename="hideWhenFull")] hide_when_full: bool,
         #[serde(rename="spaceLeft")] space_left: i64,
         #[serde(rename="totalFilled")] total_filled: i64,
-        #[serde(rename="extraTags")] extra_tags: Vec<String>,unique: String,
+        #[serde(rename="extraTags")] extra_tags: Vec<ExtraTag>,unique: String,
         #[serde(default)] ignored: bool},
     Roll{name: String, #[serde(rename="variableName")] variable_name: String,roll: Calculation},
     SavingThrow{#[serde(default)] name: String,target: String, stat: String, dc: Calculation,
@@ -305,4 +338,9 @@ pub enum PropType{
         #[serde(default)] description: Option<CalculatedText>, #[serde(default)] silent: bool,
         #[serde(default)] condition: Option<Calculation>,
         #[serde(rename="actionPropertyType",default)] action_property_type: Option<String>}
+}
+impl Default for PropType{
+    fn default() -> Self {
+        Self::Folder { name: String::default(), group_stats: false, hide_stats_group: None, location: None, tab: None }
+    }
 }
