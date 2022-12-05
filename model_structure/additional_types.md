@@ -26,7 +26,7 @@
 - text: String,
 - value: String,
 - hash: integer,
-- inlineCalculations: Array of Calculation
+- inlineCalculations: Array of [Calculation](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#calculation)
 
 ## ExtraTag
 - _id: String,
@@ -37,5 +37,5 @@
 - _id: String,
 - name: String,
 - operation: String,
-- amount:[ValWrap](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#valwrap),
+- amount: [ValWrap](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#valwrap),
 - type*: String

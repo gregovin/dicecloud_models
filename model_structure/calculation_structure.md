@@ -28,44 +28,44 @@ has a parseType which determines which fields it has
 - path: Array of String,
 - name: String
 ### parseType="array"
-- values: Array of[ParseNode](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#parsenode)
+- values: Array of [ParseNode](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#parsenode)
 
 ### parseType="call"
 - functionName: String,
-- args: Array of[ParseNode](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#parsenode)
+- args: Array of [ParseNode](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#parsenode)
 
 ### parseType="constant"
 - valueType: String,
 - value: PropVal
 
 ### parseType="if"
-- condition:[ParseNode](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#parsenode),
-- consequent:[ParseNode](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#parsenode),
-- alternative:[ParseNode](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#parsenode)
+- condition: [ParseNode](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#parsenode),
+- consequent: [ParseNode](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#parsenode),
+- alternative: [ParseNode](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#parsenode)
 
 ### parseType="index"
-- array:[ParseNode](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#parsenode),
-- index:[ParseNode](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#parsenode)
+- array: [ParseNode](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#parsenode),
+- index: [ParseNode](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#parsenode)
 
 ### parseType="operator"
-- left:[ParseNode](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#parsenode),
-- right:[ParseNode](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#parsenode),
+- left: [ParseNode](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#parsenode),
+- right: [ParseNode](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#parsenode),
 - operator: String,
 - fn: String
 
 ### parseType="not"
-- right:[ParseNode](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#parsenode)
+- right: [ParseNode](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#parsenode)
 
 ### parseType="parenthesis"
-- content:[ParseNode](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#parsenode)
+- content: [ParseNode](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#parsenode)
 
 ### parseType="roll"
-- left:[ParseNode](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#parsenode),
-- right:[ParseNode](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#parsenode)
+- left: [ParseNode](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#parsenode),
+- right: [ParseNode](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#parsenode)
 
 ### parseType="symbol"
 - name: String
 
 ### parseType="unaryOperator"
 - operator: String,
-- right:[ParseNode](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#parsenode)
+- right: [ParseNode](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#parsenode)

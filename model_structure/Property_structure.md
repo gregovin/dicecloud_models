@@ -34,14 +34,14 @@ The following properties have additional fields as follows
 - target: String
 - operation: String
 - stat: String
-- amount: Type[Calculation](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#calculation)
+- amount: [Calculation](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#calculation)
 
 ## Attribute
 - name: String
 - variableName: String, 
 - attributeType: String
 - description*: [CalcuatedText](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/additional_types.md#calculatedtext),
-- baseValue:[Calculation](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#calculation)
+- baseValue: [Calculation](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#calculation)
 - total: PropVal
 - value: PropVal,
 - damage*: PropVal
@@ -67,7 +67,7 @@ The following attribute types have additional properties
 - constitutionMod: integer
 
 ### Spellslot
-- spell_slot_level*:[Calculation](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#calculation)
+- spell_slot_level*: [Calculation](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#calculation)
 
 ## Buff
 - target: String
@@ -88,13 +88,13 @@ The following attribute types have additional properties
 All branches have
 - branchType: String
 only If and Index branches have any extra properties, both with
-- condition:[Calculation](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#calculation)
+- condition: [Calculation](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#calculation)
 
 ## Class
 - name: String,
 - variableName: String,
 - extraTags: array of [ExtraTag](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/additional_types.md#extratag),
-- slotCondition*:[Calculation](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#calculation),
+- slotCondition*: [Calculation](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#calculation),
 - level: i64
 
 ## Class Level
@@ -136,7 +136,7 @@ contents_weight*: decimal
 - name: String
 - operation: String
 - stats: Array of String
-- amount:[Calculation](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#calculation),
+- amount: [Calculation](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#calculation),
 - targetByTags*: bool,
 - targetTags*: Array of String,
 - extraTags: Array of [ExtraTag](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/additional_types.md#extratag)
@@ -173,11 +173,11 @@ contents_weight*: decimal
 
 ## Point Buy
 - name: String,
-- min:[Calculation](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#calculation),
-- max:[Calculation](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#calculation),
+- min: [Calculation](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#calculation),
+- max: [Calculation](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#calculation),
 - values: Array of PointBuyRow,
-- cost:[Calculation](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#calculation)
-- total:[Calculation](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#calculation),
+- cost: [Calculation](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#calculation)
+- total: [Calculation](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#calculation),
 - pointsLeft: integer,
 - spent: integer,
 - ignored*: bool
@@ -199,7 +199,7 @@ contents_weight*: decimal
 - description*: [CalcuatedText](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/additional_types.md#calculatedtext),
 - slotTags: Array of String,
 - slotType*: String,
-- quantityExpected:[Calculation](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#calculation),
+- quantityExpected: [Calculation](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#calculation),
 - hideWhenFull: bool,
 - spaceLeft: integer,
 - totalFilled: integer,
@@ -210,13 +210,13 @@ contents_weight*: decimal
 ## Roll
 - name: String, 
 - variableName: String,
-- roll:[Calculation](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#calculation)
+- roll: [Calculation](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#calculation)
 
 ## Saving Throw
 - name*: String,
 - target: String,
 - stat: String,
-- dc:[Calculation](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#calculation),
+- dc: [Calculation](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#calculation),
 - silent*: bool
 
 ## Skill
@@ -228,7 +228,7 @@ contents_weight*: decimal
 - abilityMod: integer,
 - proficiency: decimal,
 - value: integer,
-- baseValue*:[Calculation](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#calculation),
+- baseValue*: [Calculation](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#calculation),
 - baseProficiency*: decimal
 
 ## Slotfiller
@@ -241,9 +241,9 @@ contents_weight*: decimal
 
 ## Spell List
 - name: String, 
-- maxPrepared*:[Calculation](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#calculation),
-- dc*:[Calculation](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#calculation),
-- attack_roll_bonus*:[Calculation](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#calculation),
+- maxPrepared*: [Calculation](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#calculation),
+- dc*: [Calculation](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#calculation),
+- attack_roll_bonus*: [Calculation](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#calculation),
 - description*: [CalcuatedText](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/additional_types.md#calculatedtext),
 - ability: String,
 - abilityMod*: integer
@@ -271,7 +271,7 @@ contents_weight*: decimal
 
 ## Toggle
 - name: String,
-- condition*:[Calculation](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#calculation),
+- condition*: [Calculation](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/calculation_structure.md#calculation),
 - show_ui*: bool,
 - disabled*: bool,
 - enabled*: bool,
