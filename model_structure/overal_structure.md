@@ -1,7 +1,7 @@
 Properties with a * are optional
 # A character in dicecloud has the following properties(every time)
-- creatures: an array of CreatureInfo
-- creatureProperties: an array of FlatProp
+- creatures: an array of [CreatureInfo](https://github.com/gregovin/dicecloud_models/blob/master/model_structure/overal_structure.md#creatureinfo-consists-of)
+- creatureProperties: an array of [FlatProp](Property_structure.md)
 - creatureVariables: an array of CreatureVariables
 
 ## CreatureInfo consists of
