@@ -137,65 +137,9 @@ mod tests {
         let err= ParseError{typ: "info".to_string(),message: "dne not found, set to 0".to_string()};
         let calc = Calculation{calculation: "dne ? 1 : 0".to_string(),key:"baseValue".to_string(),
             typ: "_calculation".to_string(),hash:5843567941511658,parse_node: ParseNode::If{condition: Box::new(cond),
-                consequent: Box::new(cons),alternative: Box::new(alt)},errors: vec![err],value: PropVal::Number(0)};
+                consequent: Box::new(cons),alternative: Box::new(alt)},errors: vec![err],value: PropVal::Number(0),
+                base_value: None, effects: vec![]};
         assert_eq!(deser, calc);
-    }
-    #[test]
-    fn extended_calc(){
-        let tst = "{
-            \"calculation\": \"max(lightCrossbowWeapon,simpleRangedWeapon)\",
-            \"_key\": \"attackRoll\",
-            \"type\": \"_calculation\",
-            \"hash\": 258537885381986,
-            \"parseNode\": {
-                \"parseType\": \"call\",
-                \"functionName\": \"max\",
-                \"args\": [
-                    {
-                        \"parseType\": \"symbol\",
-                        \"name\": \"lightCrossbowWeapon\"
-                    },
-                    {
-                        \"parseType\": \"symbol\",
-                        \"name\": \"simpleRangedWeapon\"
-                    }
-                ]
-            },
-            \"parseError\": null,
-            \"baseValue\": 5,
-            \"errors\": [
-                {
-                    \"type\": \"info\",
-                    \"message\": \"lightCrossbowWeapon not found, set to 0\"
-                }
-            ],
-            \"value\": 6,
-            \"effects\": [
-                {
-                    \"_id\": \"wdz4idcsswpKTFx84\",
-                    \"name\": \"Dexterity Modifiers\",
-                    \"operation\": \"add\",
-                    \"amount\": {
-                        \"value\": 1
-                    }
-                }
-            ]
-        }";
-        let short = "{\"calculation\": \"max(lightCrossbowWeapon,simpleRangedWeapon)\",
-            \"_key\": \"attackRoll\",\"type\": \"_calculation\",\"hash\": 258537885381986,
-            \"parseNode\": {
-                \"parseType\": \"call\",\"functionName\": \"max\",
-                \"args\": [
-                    {\"parseType\": \"symbol\",\"name\": \"lightCrossbowWeapon\"},
-                    {\"parseType\": \"symbol\",\"name\": \"simpleRangedWeapon\"}
-                ]},\"parseError\": null,
-            \"errors\": [{\"type\": \"info\",\"message\": \"lightCrossbowWeapon not found, set to 0\"}],\"value\": 6}";
-        let eft = "{\"_id\": \"wdz4idcsswpKTFx84\",\"name\": \"Dexterity Modifiers\",\"operation\": \"add\",\"amount\": {\"value\": 1}}";
-        let deser: ExtendedCalc=serde_json::from_str(tst).unwrap();
-        let inner_calc: Calculation= serde_json::from_str(short).unwrap();
-        let inner_eft: Effect= serde_json::from_str(eft).unwrap();
-        let expected = ExtendedCalc{calculation: inner_calc,base_value:Some(PropVal::Number(5)),effects:vec![inner_eft]};
-        assert_eq!(deser,expected);
     }
     #[test]
     fn identifier(){

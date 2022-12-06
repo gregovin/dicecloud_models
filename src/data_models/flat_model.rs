@@ -48,7 +48,7 @@ impl PartialOrd for FlatProp{
 pub struct Character{
     creatures: Vec<CreatureInfo>,
     creature_properties: Vec<FlatProp>,
-    creature_variables: HashMap<String, serde_json::Value>
+    creature_variables: HashMap<String, CharacterVar>
 }
 impl Default for Character{
     fn default() -> Self {
