@@ -1,6 +1,7 @@
 pub mod data_models;
 
 #[cfg(test)]
+#[cfg(feature="serde_json")]
 mod tests {
     use crate::data_models::generic_model::*;
     #[test]
@@ -162,7 +163,7 @@ mod tests {
         let tst = "{\"_id\": \"CtRdeuSYYZCJGD2B2\",\"name\": \"Strength\",\"operation\": \"base\",
             \"amount\": {\"value\": 18},\"type\": \"attribute\"}";
         let deser: Effect = serde_json::from_str(tst).unwrap();
-        assert_eq!(deser, Effect{id:"CtRdeuSYYZCJGD2B2".to_string(),name:"Strength".to_string(),
+        assert_eq!(deser, Effect{id:"CtRdeuSYYZCJGD2B2".to_string(),name:Some("Strength".to_string()),
             operation: "base".to_string(),amount: ValWrap{value: PropVal::Number(18)},typ: Some("attribute".to_string())});
     }
 }

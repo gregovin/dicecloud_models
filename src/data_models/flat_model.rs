@@ -43,15 +43,10 @@ impl PartialOrd for FlatProp{
         self.order.partial_cmp(&other.order)
     }
 }
-#[derive(Serialize, Deserialize,PartialEq)]
+#[derive(Serialize, Deserialize,PartialEq,Default)]
 #[serde(rename_all="camelCase")]
 pub struct FlatCharacter{
     pub creatures: Vec<CreatureInfo>,
     pub creature_properties: Vec<FlatProp>,
-    pub creature_variables: HashMap<String, CharacterVar>
-}
-impl Default for FlatCharacter{
-    fn default() -> Self {
-        FlatCharacter { creatures: vec![], creature_properties: vec![], creature_variables: HashMap::new() }
-    }
+    pub creature_variables: Vec<HashMap<String, CharacterVar>>
 }

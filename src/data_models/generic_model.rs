@@ -1,6 +1,6 @@
 use core::fmt;
 use std::default::{Default};
-use serde::{Serialize,Deserialize,de::Unexpected};
+use serde::{Serialize,Deserialize};
 
 #[derive(Serialize, Deserialize,PartialEq,Debug,Default,Hash)]
 pub struct DeathSaveInfo{
@@ -61,6 +61,7 @@ pub struct CreatureInfo{
 #[serde(untagged,rename_all="camelCase")]
 pub enum PropVal{
     Boolean(bool),
+    None(Option<bool>),
     Number(i64),
     Fraction(f64),
     Str(String),
@@ -90,14 +91,6 @@ impl PropVal{
             _=>None
         }
     }
-    pub fn as_unexpected(&self)->Unexpected{
-        match self{
-            PropVal::Boolean(b)=>Unexpected::Bool(*b),
-            PropVal::Fraction(f)=>Unexpected::Float(*f),
-            PropVal::Number(k)=>Unexpected::Signed(*k),
-            PropVal::Str(s)=>Unexpected::Str(s)
-        }
-    }
 }
 impl fmt::Display for PropVal{
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -105,7 +98,8 @@ impl fmt::Display for PropVal{
             PropVal::Boolean(b) => write!(f,"{}",b),
             PropVal::Fraction(n) => write!(f,"{}",n),
             PropVal::Number(k)=>write!(f,"{}",k),
-            PropVal::Str(s)=>write!(f,"{}",s)
+            PropVal::Str(s)=>write!(f,"{}",s),
+            PropVal::None(_)=>write!(f,"{}","null")
         }
     }
 }
@@ -119,6 +113,7 @@ pub enum ParseNode{
     Accessor{path: Vec<String>,name: String},
     Array{values: Vec<Box<ParseNode>>},
     Call{#[serde(rename="functionName")]function_name: String,args: Vec<Box<ParseNode>>},
+    Error{error: ParseError},
     Constant{#[serde(rename="valueType")]value_type: String, value: PropVal},
     If{condition: Box<ParseNode>,consequent: Box<ParseNode>,alternative: Box<ParseNode>},
     Index{array: Box<ParseNode>,index:Box<ParseNode>},
@@ -189,8 +184,10 @@ pub struct CalculatedText{
 pub struct Effect{
     #[serde(rename="_id")]
     pub id: String,
-    pub name: String,
+    #[serde(default,skip_serializing_if="Option::is_none")]
+    pub name: Option<String>,
     pub operation: String,
+    #[serde(default)]
     pub amount:ValWrap,
     #[serde(default,rename="type",skip_serializing_if="Option::is_none")]
     pub typ: Option<String>,
@@ -216,8 +213,10 @@ pub struct ConsumedResource{
     pub variable_name: Option<String>,
     #[serde(default,skip_serializing_if="Option::is_none")]
     pub quantity: Option<Calculation>,
+    #[serde(default)]
     pub available: i64,
-    pub stat_name: String,
+    #[serde(default)]
+    pub stat_name: Option<String>,
 }
 #[derive(Serialize,Deserialize,PartialEq,Debug,Default)]
 #[serde(rename_all="camelCase")]
@@ -293,6 +292,15 @@ impl Default for AttributeType{
     fn default() -> Self {
         Self::Utility {}
     }
+}
+#[derive(Serialize,Deserialize,PartialEq,Debug,Default)]
+pub struct Refer{
+    pub id:String,
+    pub collection:String
+}
+#[derive(Serialize,Deserialize,PartialEq,Debug,Default)]
+pub struct Cache{
+    pub error: String
 }
 #[derive(Serialize,Deserialize,PartialEq,Debug)]
 #[serde(rename_all="camelCase",tag="type")]
@@ -381,7 +389,7 @@ pub enum PropType{
         #[serde(rename="includeTags",default)] include_tags: Vec<String>},
     Effect{#[serde(default)] name: String, operation: String,
         #[serde(default,skip_serializing_if="Option::is_none")] amount: Option<Calculation>,
-        #[serde(default,skip_serializing_if="Option::is_none")] text: Option<CalculatedText>,
+        #[serde(default,skip_serializing_if="Option::is_none")] text: Option<String>,
         stats: Vec<String>,
         #[serde(rename="targetByTags",default)] target_by_tags: bool,
         #[serde(rename="targetField",default,skip_serializing_if="Option::is_none")] target_field: Option<String>,
@@ -421,6 +429,7 @@ pub enum PropType{
         #[serde(rename="hideWhenFull")] hide_when_full: bool,unique: String,
         #[serde(rename="totalFilled",default)] total_filled: i64,
         #[serde(rename="spaceLeft",default,skip_serializing_if="Option::is_none")] space_left: Option<i64>},
+    Reference{#[serde(rename="ref")] refer: Refer,cache: Cache},
     Roll{#[serde(default)] name: String, #[serde(rename="variableName")] variable_name: String,
         #[serde(default,skip_serializing_if="Option::is_none")] roll: Option<Calculation>,
         #[serde(default)] silent: bool},
@@ -459,7 +468,7 @@ pub enum PropType{
         #[serde(rename="alwaysPrepared",default)] always_prepared: bool,
         #[serde(default)] prepared: bool,
         #[serde(rename="castWithoutSpellSlots",default)] cast_without_spell_slots: bool,
-        #[serde(rename="hasAttackRoll")] has_attack_roll: bool,
+        #[serde(rename="hasAttackRoll",default)] has_attack_roll: bool,
         #[serde(rename="castingTime",default,skip_serializing_if="Option::is_none")] casting_time: Option<String>,
         #[serde(default,skip_serializing_if="Option::is_none")] range: Option<String>,
         #[serde(default,skip_serializing_if="Option::is_none")] duration: Option<String>,
@@ -495,8 +504,8 @@ pub enum PropType{
         #[serde(rename="actionPropertyType",default,skip_serializing_if="Option::is_none")] action_property_type: Option<String>,
         timing: String,
         #[serde(default,skip_serializing_if="Option::is_none")] condition: Option<Calculation>,
-        #[serde(rename="targetTags")] target_tags: Vec<String>, 
-        #[serde(rename="extraTags")] extra_tags: Vec<ExtraTag>,
+        #[serde(rename="targetTags",default)] target_tags: Vec<String>, 
+        #[serde(rename="extraTags",default)] extra_tags: Vec<ExtraTag>,
         #[serde(default)] silent: bool}
 }
 impl Default for PropType{

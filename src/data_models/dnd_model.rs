@@ -965,7 +965,7 @@ impl Character{
             attacks, actions, resources, equipment, traits, features, other_profs, coins, spell_lists,
             spell_slots, char_img})
     }
-    
+    #[cfg(feature="serde_json")]
     pub fn from_str(char_json: &str)->Result<Character,String>{
         let flat_char: FlatCharacter=match serde_json::from_str(char_json){
             Ok(c)=>c,
