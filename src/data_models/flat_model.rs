@@ -26,9 +26,9 @@ pub struct FlatProp{
     #[serde(default)]
     pub deactivated_by_ancestor: Option<bool>,
     #[serde(default)]
-    pub inactive: Option<bool>,
+    pub inactive: bool,
     #[serde(default)]
-    pub removed: Option<bool>,
+    pub removed: bool,
     #[serde(default)]
     pub removed_at: Option<String>,
     #[serde(default)]
@@ -45,13 +45,13 @@ impl PartialOrd for FlatProp{
 }
 #[derive(Serialize, Deserialize,PartialEq)]
 #[serde(rename_all="camelCase")]
-pub struct Character{
-    creatures: Vec<CreatureInfo>,
-    creature_properties: Vec<FlatProp>,
-    creature_variables: HashMap<String, CharacterVar>
+pub struct FlatCharacter{
+    pub creatures: Vec<CreatureInfo>,
+    pub creature_properties: Vec<FlatProp>,
+    pub creature_variables: HashMap<String, CharacterVar>
 }
-impl Default for Character{
+impl Default for FlatCharacter{
     fn default() -> Self {
-        Character { creatures: vec![], creature_properties: vec![], creature_variables: HashMap::new() }
+        FlatCharacter { creatures: vec![], creature_properties: vec![], creature_variables: HashMap::new() }
     }
 }

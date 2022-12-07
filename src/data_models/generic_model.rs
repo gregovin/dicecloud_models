@@ -1,5 +1,6 @@
-use std::default::{Default, self};
-use serde::{Serialize,Deserialize};
+use core::fmt;
+use std::default::{Default};
+use serde::{Serialize,Deserialize,de::Unexpected};
 
 #[derive(Serialize, Deserialize,PartialEq,Debug,Default,Hash)]
 pub struct DeathSaveInfo{
@@ -67,6 +68,45 @@ pub enum PropVal{
 impl Default for PropVal{
     fn default()->PropVal{
         PropVal::Number(0)
+    }
+}
+impl PropVal{
+    pub fn as_bool(&self)->Option<bool>{
+        match self{
+            PropVal::Boolean(b)=>Some(*b),
+            _=>None
+        }
+    }
+    pub fn as_i64(&self)->Option<i64>{
+        match self{
+            PropVal::Number(k)=>Some(*k),
+            _=>None
+        }
+    }
+    pub fn as_f64(&self)->Option<f64>{
+        match self{
+            PropVal::Number(k) => Some(*k as f64),
+            PropVal::Fraction(f) => Some(*f),
+            _=>None
+        }
+    }
+    pub fn as_unexpected(&self)->Unexpected{
+        match self{
+            PropVal::Boolean(b)=>Unexpected::Bool(*b),
+            PropVal::Fraction(f)=>Unexpected::Float(*f),
+            PropVal::Number(k)=>Unexpected::Signed(*k),
+            PropVal::Str(s)=>Unexpected::Str(s)
+        }
+    }
+}
+impl fmt::Display for PropVal{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self{
+            PropVal::Boolean(b) => write!(f,"{}",b),
+            PropVal::Fraction(n) => write!(f,"{}",n),
+            PropVal::Number(k)=>write!(f,"{}",k),
+            PropVal::Str(s)=>write!(f,"{}",s)
+        }
     }
 }
 #[derive(Serialize,Deserialize,PartialEq,Debug,Default)]
