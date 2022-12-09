@@ -2,6 +2,14 @@
 name = "dicecloud_models"
 version = "0.1.0"
 edition = "2021"
+authors = ["gregovin"]
+description = "A package which provides structures represents a character as recieved from dicecloud api,
+    and (optionally) contains a flat representation if you would find that useful"
+license = "LGPL-3-or-later"
+repository = "https://github.com/gregovin/dicecloud_models"
+keywords = ["dicecloud_v2","api"]
+exclude = ["main.rs"]
+
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -11,4 +19,4 @@ serde_json = {version="1.0.89",optional = true}
 
 [features]
 dnd_models=["serde_json"]
-default=["dnd_models"]
+default=["serde_json"]

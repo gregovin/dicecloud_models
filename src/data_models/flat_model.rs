@@ -50,3 +50,9 @@ pub struct FlatCharacter{
     pub creature_properties: Vec<FlatProp>,
     pub creature_variables: Vec<HashMap<String, CharacterVar>>
 }
+pub impl FlatCharacter{
+    #[cfg(feature="serde_json")]
+    pub fn from_str(s: &str)->Result<FlatCharacter,serde_json::Error>{
+        serde_json::from_str(s)
+    }
+}
