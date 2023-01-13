@@ -3,8 +3,7 @@ name = "dicecloud_models"
 version = "0.1.0"
 edition = "2021"
 authors = ["gregovin"]
-description = "A package which provides structures represents a character as recieved from dicecloud api,
-    and (optionally) contains a flat representation if you would find that useful"
+description = "A package which provides structures represents a character as recieved from dicecloud api, and (optionally) contains a flat representation if you would find that useful"
 license = "LGPL-3-or-later"
 repository = "https://github.com/gregovin/dicecloud_models"
 keywords = ["dicecloud_v2","api"]

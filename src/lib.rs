@@ -86,7 +86,7 @@ mod tests {
         assert_eq!(deser1,PropVal::Number(1));
         assert_eq!(deser2,PropVal::Str("test".to_string()));
         assert_eq!(deser3,PropVal::Boolean(true));
-        assert_eq!(deser4,PropVal::Fraction(1.5));
+        assert_eq!(deser4,PropVal::Fraction(1.5.into()));
     }
     #[test]
     fn val_wrap(){
@@ -167,3 +167,4 @@ mod tests {
             operation: "base".to_string(),amount: ValWrap{value: PropVal::Number(18)},typ: Some("attribute".to_string())});
     }
 }
+pub mod safe_frac;

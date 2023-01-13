@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use crate::data_models::generic_model::*;
 use serde::{Serialize,Deserialize};
-#[derive(Serialize, Deserialize,PartialEq,Debug,Default)]
+#[derive(Serialize, Deserialize,PartialEq,Debug,Default,Clone)]
 #[serde(rename_all="camelCase")]
 pub struct FlatProp{
     #[serde(rename="_id")]
@@ -32,27 +32,21 @@ pub struct FlatProp{
     #[serde(default)]
     pub removed_at: Option<String>,
     #[serde(default)]
-    removed_with: Option<String>,
+    pub removed_with: Option<String>,
     #[serde(default)]
-    dirty: Option<bool>,
+    pub dirty: Option<bool>,
     #[serde(default,rename="_migrationError")]
-    migration_error: Vec<String>
+    pub migration_error: Vec<String>
 }
 impl PartialOrd for FlatProp{
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
         self.order.partial_cmp(&other.order)
     }
 }
-#[derive(Serialize, Deserialize,PartialEq,Default)]
+#[derive(Serialize, Deserialize,PartialEq,Default,Clone)]
 #[serde(rename_all="camelCase")]
 pub struct FlatCharacter{
     pub creatures: Vec<CreatureInfo>,
     pub creature_properties: Vec<FlatProp>,
     pub creature_variables: Vec<HashMap<String, CharacterVar>>
-}
-pub impl FlatCharacter{
-    #[cfg(feature="serde_json")]
-    pub fn from_str(s: &str)->Result<FlatCharacter,serde_json::Error>{
-        serde_json::from_str(s)
-    }
 }
