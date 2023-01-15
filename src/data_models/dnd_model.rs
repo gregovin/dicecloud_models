@@ -674,22 +674,22 @@ impl Character{
                         if &name == "Initiative"{
                             initiative=value;
                         } else if skill_type == "save"{
-                            let prof = if proficiency==0.49 || proficiency==0.5{
+                            let prof = if proficiency.into_iner()==0.49 || proficiency.into_iner()==0.5{
                                 Proficiency::Half
-                            } else if proficiency==1.0{
+                            } else if proficiency.into_iner()==1.0{
                                 Proficiency::Profficient
-                            } else if proficiency==2.0{
+                            } else if proficiency.into_iner()==2.0{
                                 Proficiency::Expert
                             } else {
                                 Proficiency::None
                             };
                             saving_throws.push(Skill::new(name,value,prof));
                         } else if skill_type == "skill"{
-                            let prof = if proficiency==0.49 || proficiency==0.5{
+                            let prof = if proficiency.into_iner()==0.49 || proficiency.into_iner()==0.5{
                                 Proficiency::Half
-                            } else if proficiency==1.0{
+                            } else if proficiency.into_iner()==1.0{
                                 Proficiency::Profficient
-                            } else if proficiency==2.0{
+                            } else if proficiency.into_iner()==2.0{
                                 Proficiency::Expert
                             } else {
                                 Proficiency::None

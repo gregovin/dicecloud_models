@@ -28,7 +28,7 @@ mod tests {
     fn settings(){
         let tst = "{\"showTreeTab\": true,\"hideUnusedStats\": true}";
         let deser: Settings = serde_json::from_str(tst).unwrap();
-        assert_eq!(deser,Settings{show_tree_tab:true,hide_rest_buttons:false,hide_unused_stats:true,hide_spells_tab:false});
+        assert_eq!(deser,Settings{show_tree_tab:true,hide_rest_buttons:false,hide_unused_stats:true,hide_spells_tab:false,hit_dice_reset_multiplier: None,discord_webhook:None});
     }
     #[test]
     fn creature_info(){
@@ -66,7 +66,7 @@ mod tests {
         let deser: CreatureInfo=serde_json::from_str(&tst).unwrap();
         let death_save = DeathSaveInfo{pass: 0,fail: 0, can_death_save: true, stable:false};
         let denormalized_stats = DenormalizedStats{xp: 0,milestone_levels:1};
-        let settings = Settings{show_tree_tab:true,hide_rest_buttons:true,hide_unused_stats:true,hide_spells_tab:true};
+        let settings = Settings{show_tree_tab:true,hide_rest_buttons:true,hide_unused_stats:true,hide_spells_tab:true,hit_dice_reset_multiplier:None,discord_webhook:None};
         let char_info = CreatureInfo{id,owner: own,name: "sorcadin".to_string(),gender: "male".to_string(),
             alignment:"neutral good".to_string(),allowed_libraries:vec![lib1,lib2],allowed_library_collections:vec![],
             death_save, denormalized_stats,typ: "pc".to_string(),settings,readers: vec![],writers: vec![],public:true,

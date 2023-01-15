@@ -21,7 +21,7 @@ pub struct DenormalizedStats{
     pub milestone_levels: usize,
     pub xp: usize,
 }
-#[derive(Serialize,Deserialize,Default, PartialEq,Eq,Debug,Hash,Clone,Copy,PartialOrd, Ord)]
+#[derive(Serialize,Deserialize,Default, PartialEq,Eq,Debug,Hash,Clone,PartialOrd, Ord)]
 #[serde(rename_all="camelCase")]
 pub struct Settings{
     #[serde(default)]
@@ -31,7 +31,11 @@ pub struct Settings{
     #[serde(default)]
     pub hide_unused_stats: bool,
     #[serde(default)]
-    pub hide_spells_tab: bool
+    pub hide_spells_tab: bool,
+    #[serde(default,skip_serializing_if="Option::is_none")]
+    pub hit_dice_reset_multiplier: Option<SafeDouble>,
+    #[serde(default,skip_serializing_if="Option::is_none")]
+    pub discord_webhook: Option<String>
 }
 
 #[derive(Serialize, Deserialize,PartialEq,Eq,Debug,Default,Hash,Clone)]
