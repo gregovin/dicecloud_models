@@ -5,68 +5,22 @@ pub mod data_models;
 mod tests {
     use crate::data_models::generic_model::*;
     #[test]
-    fn creature_info(){
-        let (id,own,lib1,lib2)=("this".to_string(),"is".to_string(),"a".to_string(),"test".to_string());
-        let tst =format!("{{\"_id\": \"{}\",
-            \"owner\": \"{}\",
-            \"name\": \"sorcadin\",
-            \"gender\": \"male\",
-            \"alignment\": \"neutral good\",
-            \"allowedLibraries\": [\"{}\",\"{}\"],
-            \"allowedLibraryCollections\": [],
-            \"deathSave\": {{
-                \"pass\": 0,
-                \"fail\": 0,
-                \"canDeathSave\": true,
-                \"stable\": false
-            }},
-            \"denormalizedStats\": {{
-                \"xp\": 0,
-                \"milestoneLevels\": 1
-            }},
-            \"type\": \"pc\",
-            \"damageMultipliers\": {{}},
-            \"variables\": {{}},
-            \"settings\": {{
-                \"showTreeTab\": true,
-                \"hideRestButtons\": true,
-                \"hideUnusedStats\": true,
-                \"hideSpellsTab\": true
-            }},
-            \"readers\": [],
-            \"writers\": [],
-            \"public\": true
-        }}",id,own,&lib1,&lib2);
-        let deser: CreatureInfo=serde_json::from_str(&tst).unwrap();
-        let death_save = DeathSaveInfo{pass: 0,fail: 0, can_death_save: true, stable:false};
-        let denormalized_stats = DenormalizedStats{xp: 0,milestone_levels:1};
-        let settings = Settings{show_tree_tab:true,hide_rest_buttons:true,hide_unused_stats:true,hide_spells_tab:true,hit_dice_reset_multiplier:None,discord_webhook:None};
-        let char_info = CreatureInfo{id,owner: own,name: "sorcadin".to_string(),gender: "male".to_string(),
-            alignment:"neutral good".to_string(),allowed_libraries:vec![lib1,lib2],allowed_library_collections:vec![],
-            death_save, denormalized_stats,typ: "pc".to_string(),settings,readers: vec![],writers: vec![],public:true,
-            picture: None,avatar_picture: None};
-        assert_eq!(deser,char_info);
-    }
-    #[test]
     fn prop_val(){
         let tst1="1";
         let tst2="\"test\"";
         let tst3="true";
         let tst4="1.5";
+        let tst5 ="null";
         let deser1: PropVal = serde_json::from_str(tst1).unwrap();
         let deser2: PropVal = serde_json::from_str(tst2).unwrap();
         let deser3: PropVal = serde_json::from_str(tst3).unwrap();
         let deser4: PropVal = serde_json::from_str(tst4).unwrap();
+        let deser5: PropVal = serde_json::from_str(tst5).unwrap();
         assert_eq!(deser1,PropVal::Number(1));
         assert_eq!(deser2,PropVal::Str("test".to_string()));
         assert_eq!(deser3,PropVal::Boolean(true));
         assert_eq!(deser4,PropVal::Fraction(1.5.into()));
-    }
-    #[test]
-    fn val_wrap(){
-        let tst="{\"value\":1}";
-        let deser: ValWrap = serde_json::from_str(tst).unwrap();
-        assert_eq!(deser,ValWrap{value: PropVal::Number(1)});
+        assert_eq!(deser5,PropVal::None(None));
     }
     #[test]
     fn parse_node(){
@@ -115,22 +69,6 @@ mod tests {
                 consequent: Box::new(cons),alternative: Box::new(alt)},errors: vec![err],value: PropVal::Number(0),
                 base_value: None, effects: vec![]};
         assert_eq!(deser, calc);
-    }
-    #[test]
-    fn identifier(){
-        let tst="{\"collection\": \"creatures\",\"id\": \"cRdjQ9HKMzsBcBTSE\"}";
-        let tst2="{\"id\": \"i2nR4kWmBREB8A8iL\",\"collection\": \"creatureProperties\"}";
-        let deser: Identifier = serde_json::from_str(tst).unwrap();
-        let deser2: Identifier = serde_json::from_str(tst2).unwrap();
-        assert_eq!(deser,Identifier{id:"cRdjQ9HKMzsBcBTSE".to_string(),collection:"creatures".to_string()});
-        assert_eq!(deser2,Identifier{id:"i2nR4kWmBREB8A8iL".to_string(),collection:"creatureProperties".to_string()});
-    }
-    #[test]
-    fn calculated_text(){
-        let tst="{\"text\": \"test\",\"inlineCalculations\": [],\"value\": \"test\",\"hash\": 8030999935138279}";
-        let deser: CalculatedText = serde_json::from_str(tst).unwrap();
-        assert_eq!(deser,CalculatedText{text: "test".to_string(),value: "test".to_string(),hash: 8030999935138279, inline_calculations: vec![]});
-    
     }
     #[test]
     fn effect(){

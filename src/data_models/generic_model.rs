@@ -5,7 +5,8 @@ use serde::{Serialize,Deserialize};
 
 
 #[derive(Serialize, Deserialize,PartialEq,Eq,Debug,Default,Hash,Clone,Copy)]
-/// A structure to store the death save info as in the creature settings of the dicecloud v2 api output
+/// A structure to store the death save info as in the creature settings
+/// 
 /// #Example
 /// ```
 /// # use std::error::Error;
@@ -26,7 +27,8 @@ pub struct DeathSaveInfo{
     pub can_death_save: bool,
     pub stable: bool
 }
-/// A structure to store the denormalized stats as represented in the dicecloud v2 api output
+/// A structure to store the denormalized stats as in the creature settings
+/// 
 /// #Example
 /// ```
 /// # use std::error::Error;
@@ -46,7 +48,8 @@ pub struct DenormalizedStats{
     pub milestone_levels: usize,
     pub xp: usize,
 }
-/// A structure to deal with a character's overall settings, as represented in the dicecloud v2 api output
+/// A structure to deal with a character's advanced settings
+/// 
 /// #Example
 /// ```
 /// # use std::error::Error;
@@ -77,7 +80,8 @@ pub struct Settings{
     #[serde(default,skip_serializing_if="Option::is_none")]
     pub discord_webhook: Option<String>
 }
-/// A structure to deal with a character's overall settings, as represented in the dicecloud v2 api output
+/// A structure to deal with a character's overall settings
+/// 
 /// #Examples
 /// ```
 /// # use std::error::Error;
@@ -136,6 +140,7 @@ pub struct CreatureInfo{
 #[derive(Serialize,Deserialize,PartialEq,Debug,Clone)]
 #[serde(untagged,rename_all="camelCase")]
 /// A structure that represents a value an attribute or constant can take
+/// 
 /// #Examples
 /// ```
 /// # use std::error::Error;
@@ -166,6 +171,7 @@ impl Default for PropVal{
 }
 impl PropVal{
     /// Gets the value as a bool, if it is one
+    /// 
     /// #Example
     /// ```
     /// use dicecloud_models::data_models::generic_model::PropVal;
@@ -181,6 +187,7 @@ impl PropVal{
         }
     }
     /// Gets the value as an integer, if it is one
+    /// 
     /// #Example
     /// ```
     /// use dicecloud_models::data_models::generic_model::PropVal;
@@ -196,6 +203,7 @@ impl PropVal{
         }
     }
     /// Gets the value as an floating point, if it is number-like
+    /// 
     /// #Example
     /// ```
     /// use dicecloud_models::data_models::generic_model::PropVal;
@@ -225,12 +233,28 @@ impl fmt::Display for PropVal{
         }
     }
 }
-/// wraps a value in a structure (relevant for effects)
+/// Wraps a value in a structure (relevant for effects)
+/// 
+/// #Example
+/// ```
+/// # use std::error::Error;
+/// # 
+/// # fn main() -> Result<(), Box<dyn Error>> {
+/// use dicecloud_models::data_models::generic_model::{PropVal,ValWrap};
+/// 
+/// let tst="{\"value\":1}";
+/// let deser: ValWrap = serde_json::from_str(tst)?;
+/// assert_eq!(deser,ValWrap{value: PropVal::Number(1)});
+/// # Ok(())
+/// # }
+/// ```
 #[derive(Serialize,Deserialize,PartialEq,Debug,Default,Clone)]
 pub struct ValWrap{
     pub value: PropVal
 }
-/// Encapsulates a ParseNode for calculations(notice it is recursive)
+/// Encapsulates a ParseNode for calculations.
+/// 
+/// You probably don't need to look at this
 #[derive(Serialize,Deserialize,PartialEq,Debug,Clone)]
 #[serde(rename_all="camelCase",tag="parseType")]
 pub enum ParseNode{
@@ -254,11 +278,33 @@ impl Default for ParseNode{
     }
 }
 #[derive(Serialize,Deserialize,PartialEq,Eq,Debug,Default,Hash,Clone)]
+/// Encapsulates a ParseError for calculations
+/// 
+/// You probably don't need to look at this
 pub struct ParseError{
     #[serde(rename="type")]
     pub typ: String,
     pub message: String,
 }
+/// Represents a Calculation as in a calculated field
+/// 
+/// #Example
+/// ```
+/// # use std::error::Error;
+/// # 
+/// # fn main() -> Result<(), Box<dyn Error>> {
+/// let tst = "{\"calculation\": \"dne ? 1 : 0\",\"_key\": \"baseValue\",\"type\": \"_calculation\",
+///     \"hash\": 5843567941511658,\"parseNode\": {
+///         \"parseType\": \"if\",\"condition\": {\"parseType\": \"symbol\",\"name\": \"dne\"},
+///         \"consequent\": {\"parseType\": \"constant\",\"valueType\": \"number\",\"value\": 1},
+///         \"alternative\": {\"parseType\": \"constant\",\"valueType\": \"number\",\"value\": 0}},
+///     \"parseError\": null,\"errors\": [{\"type\": \"info\",\"message\": \"dne not found, set to 0\"}],
+///     \"value\": 0}";
+/// let deser: Calculation = serde_json::from_str(tst)?;
+/// print!("{}",deser.value);
+/// # Ok(())
+/// # }
+/// ```
 #[derive(Serialize,Deserialize,PartialEq,Debug, Default,Clone)]
 #[serde(rename_all="camelCase")]
 pub struct Calculation{
@@ -276,6 +322,7 @@ pub struct Calculation{
     #[serde(default)]
     pub effects: Vec<Effect>
 }
+/// A simpler version of the calculation type for calculated text fields.
 #[derive(Serialize,Deserialize,PartialEq,Debug, Default,Clone)]
 #[serde(rename_all="camelCase")]
 pub struct SimpleCalc{
@@ -289,12 +336,42 @@ pub struct SimpleCalc{
     pub errors: Vec<ParseError>,
     pub value: PropVal,
 }
+/// Represents an identifier (ie for parent, ancestors)
+/// 
+/// #Example
+/// ```
+/// # use std::error::Error;
+/// # 
+/// # fn main() -> Result<(), Box<dyn Error>> {
+/// use dicecloud_modes::data_models::generic_model::Identifier;
+/// 
+/// let tst="{\"collection\": \"creatures\",\"id\": \"cRdjQ9HKMzsBcBTSE\"}";
+/// let deser: Identifier = serde_json::from_str(tst)?;
+/// assert_eq!(deser,Identifier{id:"cRdjQ9HKMzsBcBTSE".to_string(),collection:"creatures".to_string()});
+/// # Ok(())
+/// # }
+/// ```
 #[derive(Serialize,Deserialize,PartialEq,Eq,Debug, Default,Hash,Clone)]
 #[serde(rename_all="camelCase")]
 pub struct Identifier{
     pub id: String,
     pub collection: String,
 }
+/// Represents a calculated text field, such as descriptions
+/// 
+/// #Example
+/// ```
+/// # use std::error::Error;
+/// # 
+/// # fn main() -> Result<(), Box<dyn Error>> {
+/// use dicecloud_modes::data_models::generic_model::CalculatedText;
+/// 
+/// let tst="{\"text\": \"test\",\"inlineCalculations\": [],\"value\": \"test\",\"hash\": 8030999935138279}";
+/// let deser: CalculatedText = serde_json::from_str(tst)?;
+/// assert_eq!(deser,CalculatedText{text: "test".to_string(),value: "test".to_string(),hash: 8030999935138279, inline_calculations: vec![]});
+/// # Ok(())
+/// # }
+/// ```
 #[derive(Serialize,Deserialize,PartialEq,Debug, Default,Clone)]
 #[serde(rename_all="camelCase")]
 pub struct CalculatedText{
@@ -303,6 +380,24 @@ pub struct CalculatedText{
     pub hash: i64,
     pub inline_calculations: Vec<SimpleCalc>
 }
+/// Represents the effect field on an attribute(not an effect property)
+/// 
+/// #Example
+/// ```
+/// # use std::error::Error;
+/// # 
+/// # fn main() -> Result<(), Box<dyn Error>> {
+/// use dicecloud_modes::data_models::generic_model::{Effect,ValWrap,PropVal};
+/// 
+/// let tst = "{\"_id\": \"CtRdeuSYYZCJGD2B2\",\"name\": \"Strength\",\"operation\": \"base\",
+///     \"amount\": {\"value\": 18},\"type\": \"attribute\"}";
+/// let deser: Effect = serde_json::from_str(tst)?;
+/// assert_eq!(deser, Effect{id:"CtRdeuSYYZCJGD2B2".to_string(),name:Some("Strength".to_string()),
+///     operation: "base".to_string(),amount: ValWrap{value: PropVal::Number(18)},
+///     typ: Some("attribute".to_string())});
+/// # Ok(())
+/// # }
+/// ```
 #[derive(Serialize,Deserialize,PartialEq,Debug, Default,Clone)]
 #[serde(rename_all="camelCase")]
 pub struct Effect{
@@ -316,6 +411,9 @@ pub struct Effect{
     #[serde(default,rename="type",skip_serializing_if="Option::is_none")]
     pub typ: Option<String>,
 }
+/// Represents amunition as used by actions
+/// 
+/// 
 #[derive(Serialize,Deserialize,PartialEq,Debug,Default,Clone)]
 #[serde(rename_all="camelCase")]
 pub struct ConsumedItem{
