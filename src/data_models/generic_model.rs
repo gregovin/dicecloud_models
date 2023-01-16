@@ -2,8 +2,6 @@ use core::fmt;
 use std::default::{Default};
 use serde::{Serialize,Deserialize};
 
-use crate::safe_frac::SafeDouble;
-
 
 
 #[derive(Serialize, Deserialize,PartialEq,Eq,Debug,Default,Hash,Clone,Copy)]
@@ -21,7 +19,7 @@ pub struct DenormalizedStats{
     pub milestone_levels: usize,
     pub xp: usize,
 }
-#[derive(Serialize,Deserialize,Default, PartialEq,Eq,Debug,Hash,Clone,PartialOrd, Ord)]
+#[derive(Serialize,Deserialize,Default, PartialEq,Debug,Clone)]
 #[serde(rename_all="camelCase")]
 pub struct Settings{
     #[serde(default)]
@@ -33,12 +31,12 @@ pub struct Settings{
     #[serde(default)]
     pub hide_spells_tab: bool,
     #[serde(default,skip_serializing_if="Option::is_none")]
-    pub hit_dice_reset_multiplier: Option<SafeDouble>,
+    pub hit_dice_reset_multiplier: Option<f64>,
     #[serde(default,skip_serializing_if="Option::is_none")]
     pub discord_webhook: Option<String>
 }
 
-#[derive(Serialize, Deserialize,PartialEq,Eq,Debug,Default,Hash,Clone)]
+#[derive(Serialize, Deserialize,PartialEq,Debug,Default,Clone)]
 #[serde(rename_all="camelCase")]
 pub struct CreatureInfo{
     #[serde(rename = "_id")]
@@ -64,13 +62,13 @@ pub struct CreatureInfo{
     #[serde(default,skip_serializing_if="Option::is_none")]
     pub avatar_picture: Option<String>
 }
-#[derive(Serialize,Deserialize,PartialEq,Debug,Clone,Eq,Hash)]
+#[derive(Serialize,Deserialize,PartialEq,Debug,Clone)]
 #[serde(untagged,rename_all="camelCase")]
 pub enum PropVal{
     Boolean(bool),
     None(Option<bool>),
     Number(i64),
-    Fraction(SafeDouble),
+    Fraction(f64),
     Str(String),
 }
 impl Default for PropVal{
@@ -94,7 +92,7 @@ impl PropVal{
     pub fn as_f64(&self)->Option<f64>{
         match self{
             PropVal::Number(k) => Some(*k as f64),
-            PropVal::Fraction(f) => Some(f.into_iner()),
+            PropVal::Fraction(f) => Some(*f),
             _=>None
         }
     }
@@ -110,11 +108,11 @@ impl fmt::Display for PropVal{
         }
     }
 }
-#[derive(Serialize,Deserialize,PartialEq,Eq,Debug,Default,Clone,Hash)]
+#[derive(Serialize,Deserialize,PartialEq,Debug,Default,Clone)]
 pub struct ValWrap{
     pub value: PropVal
 }
-#[derive(Serialize,Deserialize,PartialEq,Eq,Debug,Clone,Hash)]
+#[derive(Serialize,Deserialize,PartialEq,Debug,Clone)]
 #[serde(rename_all="camelCase",tag="parseType")]
 pub enum ParseNode{
     Accessor{path: Vec<String>,name: String},
@@ -142,7 +140,7 @@ pub struct ParseError{
     pub typ: String,
     pub message: String,
 }
-#[derive(Serialize,Deserialize,PartialEq,Eq,Debug, Default,Clone,Hash)]
+#[derive(Serialize,Deserialize,PartialEq,Debug, Default,Clone)]
 #[serde(rename_all="camelCase")]
 pub struct Calculation{
     pub calculation: String,
@@ -159,7 +157,7 @@ pub struct Calculation{
     #[serde(default)]
     pub effects: Vec<Effect>
 }
-#[derive(Serialize,Deserialize,PartialEq,Eq,Debug, Default,Clone,Hash)]
+#[derive(Serialize,Deserialize,PartialEq,Debug, Default,Clone)]
 #[serde(rename_all="camelCase")]
 pub struct SimpleCalc{
     pub calculation: String,
@@ -178,7 +176,7 @@ pub struct Identifier{
     pub id: String,
     pub collection: String,
 }
-#[derive(Serialize,Deserialize,PartialEq,Eq,Debug, Default,Clone,Hash)]
+#[derive(Serialize,Deserialize,PartialEq,Debug, Default,Clone)]
 #[serde(rename_all="camelCase")]
 pub struct CalculatedText{
     pub text: String,
@@ -186,7 +184,7 @@ pub struct CalculatedText{
     pub hash: i64,
     pub inline_calculations: Vec<SimpleCalc>
 }
-#[derive(Serialize,Deserialize,PartialEq,Eq,Debug, Default,Clone,Hash)]
+#[derive(Serialize,Deserialize,PartialEq,Debug, Default,Clone)]
 #[serde(rename_all="camelCase")]
 pub struct Effect{
     #[serde(rename="_id")]
@@ -199,7 +197,7 @@ pub struct Effect{
     #[serde(default,rename="type",skip_serializing_if="Option::is_none")]
     pub typ: Option<String>,
 }
-#[derive(Serialize,Deserialize,PartialEq,Eq,Debug,Default,Clone,Hash)]
+#[derive(Serialize,Deserialize,PartialEq,Debug,Default,Clone)]
 #[serde(rename_all="camelCase")]
 pub struct ConsumedItem{
     #[serde(rename="_id")]
@@ -211,7 +209,7 @@ pub struct ConsumedItem{
     #[serde(default,skip_serializing_if="Option::is_none")]
     pub item_id: Option<String>
 }
-#[derive(Serialize,Deserialize,PartialEq,Eq,Debug,Default,Clone,Hash)]
+#[derive(Serialize,Deserialize,PartialEq,Debug,Default,Clone)]
 #[serde(rename_all="camelCase")]
 pub struct ConsumedResource{
     #[serde(rename="_id")]
@@ -233,7 +231,7 @@ pub struct ExtraTag{
     operation: String,
     tags: Vec<String>
 }
-#[derive(Serialize,Deserialize,PartialEq,Eq,Debug,Default,Clone,Hash)]
+#[derive(Serialize,Deserialize,PartialEq,Debug,Default,Clone)]
 #[serde(rename_all="camelCase")]
 pub struct Resource{
     items_consumed: Vec<ConsumedItem>,
@@ -245,7 +243,7 @@ pub struct Icon{
     pub name: String,
     pub shape: String,
 }
-#[derive(Serialize,Deserialize,PartialEq,Eq,Debug,Clone,Hash)]
+#[derive(Serialize,Deserialize,PartialEq,Debug,Clone)]
 #[serde(rename_all="camelCase",tag="branchType")]
 pub enum BranchType{
     EachTarget{},
@@ -257,7 +255,7 @@ pub enum BranchType{
     SuccessfulSave{},
     Random{}
 }
-#[derive(Serialize,Deserialize,PartialEq,Eq,Debug,Default,Clone,Hash)]
+#[derive(Serialize,Deserialize,PartialEq,Debug,Default,Clone)]
 #[serde(rename_all="camelCase")]
 pub struct PointBuyRow{
     #[serde(rename="_id")]
@@ -272,11 +270,11 @@ pub struct PointBuyRow{
     #[serde(default)] spent: i64,
     #[serde(default)] errors: Vec<ParseError>,
 }
-#[derive(Serialize,Deserialize,PartialEq,Eq,Debug,Clone,Hash)]
+#[derive(Serialize,Deserialize,PartialEq,Debug,Clone)]
 #[serde(rename_all="camelCase",tag="attributeType")]
 pub enum AttributeType{
     Ability{#[serde(default)] modifier: i64,
-        #[serde(default,skip_serializing_if="Option::is_none")] proficiency: Option<SafeDouble>},
+        #[serde(default,skip_serializing_if="Option::is_none")] proficiency: Option<f64>},
     HealthBar{#[serde(rename="healthBarColorMid",default,skip_serializing_if="Option::is_none")]
         health_bar_color_mid: Option<String>,
         #[serde(rename="healthBarColorLow",default)] health_bar_color_low: Option<String>,
@@ -309,7 +307,7 @@ pub struct Refer{
 pub struct Cache{
     pub error: String
 }
-#[derive(Serialize,Deserialize,PartialEq,Debug,Clone,Hash)]
+#[derive(Serialize,Deserialize,PartialEq,Debug,Clone)]
 #[serde(rename_all="camelCase",tag="type")]
 pub enum PropType{
     Action{#[serde(default)] name: String,
@@ -381,17 +379,17 @@ pub enum PropType{
         errors: Vec<ParseError>},
     Container{#[serde(default)] name: String, #[serde(default)] carried: bool,
         #[serde(rename="contentsWeightless",default)] contents_weightless: bool,
-        #[serde(default)] weight: SafeDouble, #[serde(default)] value: SafeDouble,
+        #[serde(default)] weight: f64, #[serde(default)] value: f64,
         #[serde(default,skip_serializing_if="Option::is_none")] description: Option<CalculatedText>,
-        #[serde(rename="contentsWeight",default)] contents_weight: SafeDouble,
-        #[serde(rename="carriedWeight",default)] carried_weight: SafeDouble,
-        #[serde(rename="contentsValue",default)] contents_value: SafeDouble,
-        #[serde(rename="carriedValue",default)] carried_value: SafeDouble},
+        #[serde(rename="contentsWeight",default)] contents_weight: f64,
+        #[serde(rename="carriedWeight",default)] carried_weight: f64,
+        #[serde(rename="contentsValue",default)] contents_value: f64,
+        #[serde(rename="carriedValue",default)] carried_value: f64},
     Damage{#[serde(default)] amount: Option<Calculation>,
         target: String, #[serde(rename="damageType")] damage_type: String,
         #[serde(default)] silent: bool},
     DamageMultiplier{#[serde(default)] name: String,
-        #[serde(rename="damageTypes")] damage_types: Vec<String>,value: SafeDouble,
+        #[serde(rename="damageTypes")] damage_types: Vec<String>,value: f64,
         #[serde(rename="excludeTags",default)] exclude_tags: Vec<String>,
         #[serde(rename="includeTags",default)] include_tags: Vec<String>},
     Effect{#[serde(default)] name: String, operation: String,
@@ -411,7 +409,7 @@ pub enum PropType{
     Item{#[serde(default)] name: String, #[serde(default)] plural: String,
         #[serde(default,skip_serializing_if="Option::is_none")] description: Option<CalculatedText>,
         quantity: i64,
-        #[serde(default)] weight: SafeDouble,#[serde(default)] value: SafeDouble,
+        #[serde(default)] weight: f64,#[serde(default)] value: f64,
         #[serde(rename="requiresAttunement",default)] requires_attunement: bool,
         #[serde(default,skip_serializing_if="Option::is_none")] attuned: Option<bool>,
         #[serde(rename="showIncrement",default)] show_increment: bool, equipped: bool},
@@ -424,7 +422,7 @@ pub enum PropType{
         #[serde(default,skip_serializing_if="Option::is_none")] total: Option<Calculation>,
         cost: Calculation,#[serde(default)] spent: i64,#[serde(rename="pointsLeft")] points_left: i64,
         #[serde(default)]errors: Vec<ParseError>},
-    Proficiency{#[serde(default)] name: String,stats: Vec<String>,value: SafeDouble},
+    Proficiency{#[serde(default)] name: String,stats: Vec<String>,value: f64},
     PropertySlot{#[serde(default)] name: String,
         #[serde(default,skip_serializing_if="Option::is_none")] description: Option<CalculatedText>,
         #[serde(rename="slotType",default,skip_serializing_if="Option::is_none")] slot_type: Option<String>,
@@ -448,13 +446,13 @@ pub enum PropType{
         #[serde(rename="variableName",default,skip_serializing_if="Option::is_none")] variable_name: Option<String>,
         #[serde(default,skip_serializing_if="Option::is_none")] ability: Option<String>,
         #[serde(rename="skillType")] skill_type: String,
-        #[serde(rename="baseProficiency",default,skip_serializing_if="Option::is_none")] base_proficiency: Option<SafeDouble>,
+        #[serde(rename="baseProficiency",default,skip_serializing_if="Option::is_none")] base_proficiency: Option<f64>,
         #[serde(rename="baseValue",default,skip_serializing_if="Option::is_none")] base_value: Option<Calculation>,
         #[serde(default,skip_serializing_if="Option::is_none")] description: Option<CalculatedText>,
         value: i64,
         #[serde(rename="abilityMod",default)] ability_mod: i64,
         #[serde(default)] advantage: i64, #[serde(default,rename="passiveBonus")] passive_bonus: i64,
-        proficiency: SafeDouble,
+        proficiency: f64,
         #[serde(default,rename="conditionalBenefits")] conditional_benifits: Vec<String>,
         #[serde(default)] fail: i64, #[serde(default)] hide:bool, #[serde(default)] overridden: bool,
         #[serde(default)] effects: Vec<Effect>
@@ -548,13 +546,13 @@ pub enum VariableType{
     Skill{
         #[serde(default,skip_serializing_if="Option::is_none")] ability: Option<String>,
         #[serde(rename="skillType")] skill_type: String,
-        #[serde(rename="baseProficiency",default,skip_serializing_if="Option::is_none")] base_proficiency: Option<SafeDouble>,
+        #[serde(rename="baseProficiency",default,skip_serializing_if="Option::is_none")] base_proficiency: Option<f64>,
         #[serde(rename="baseValue",default,skip_serializing_if="Option::is_none")] base_value: Option<Calculation>,
         #[serde(default,skip_serializing_if="Option::is_none")] description: Option<CalculatedText>, 
         value: i64,
         #[serde(rename="abilityMod",default)] ability_mod: i64,
         #[serde(default)] advantage: i64,
-        #[serde(default,rename="passiveBonus")] passive_bonus: i64, proficiency: SafeDouble,
+        #[serde(default,rename="passiveBonus")] passive_bonus: i64, proficiency: f64,
         #[serde(default,rename="conditionalBenefits")] conditional_benifits: Vec<String>,
         #[serde(default)] fail: i64, #[serde(default)] hide:bool, #[serde(default)] overridden: bool,
         #[serde(default)] effects: Vec<Effect>},

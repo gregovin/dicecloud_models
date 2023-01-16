@@ -167,4 +167,3 @@ mod tests {
             operation: "base".to_string(),amount: ValWrap{value: PropVal::Number(18)},typ: Some("attribute".to_string())});
     }
 }
-pub mod safe_frac;
