@@ -5,6 +5,20 @@ use serde::{Serialize,Deserialize};
 
 
 #[derive(Serialize, Deserialize,PartialEq,Eq,Debug,Default,Hash,Clone,Copy)]
+/// A structure to store the death save info as in the creature settings of the dicecloud v2 api output
+/// #Example
+/// ```
+/// # use std::error::Error;
+/// # 
+/// # fn main() -> Result<(), Box<dyn Error>> {
+/// use dicecloud_models::data_models::generic_model::DeathSaveInfo;
+/// 
+/// let tst = "{\"pass\":0,\"fail\":0,\"canDeathSave\":false,\"stable\":true}";
+/// let deser: DeathSaveInfo = serde_json::from_str(tst)?;
+/// assert_eq!(deser, DeathSaveInfo{pass: 0, fail: 0, can_death_save:false,stable:true});
+/// # Ok(())
+/// # }
+/// ```
 pub struct DeathSaveInfo{
     pub pass: usize,
     pub fail: usize,
@@ -12,13 +26,41 @@ pub struct DeathSaveInfo{
     pub can_death_save: bool,
     pub stable: bool
 }
-
+/// A structure to store the denormalized stats as represented in the dicecloud v2 api output
+/// #Example
+/// ```
+/// # use std::error::Error;
+/// # 
+/// # fn main() -> Result<(), Box<dyn Error>> {
+/// use dicecloud_models::data_models::generic_model::DenormalizedStats;
+/// 
+/// let tst = "{\"xp\": 0,\"milestoneLevels\": 1}";
+/// let deser: DenormalizedStats = serde_json::from_str(tst)?;
+/// assert_eq!(deser,DenormalizedStats{xp: 0,milestone_levels:1});
+/// # Ok(())
+/// # }
+/// ```
 #[derive(Serialize,Deserialize, PartialEq,Eq,Debug,Default,Hash,Clone,Copy,PartialOrd, Ord)]
 pub struct DenormalizedStats{
     #[serde(rename = "milestoneLevels")]
     pub milestone_levels: usize,
     pub xp: usize,
 }
+/// A structure to deal with a character's overall settings, as represented in the dicecloud v2 api output
+/// #Example
+/// ```
+/// # use std::error::Error;
+/// # 
+/// # fn main() -> Result<(), Box<dyn Error>> {
+/// use dicecloud_models::data_models::generic_model::Settings;
+/// 
+/// let tst = "{\"showTreeTab\": true,\"hideUnusedStats\": true}";
+/// let deser: Settings = serde_json::from_str(tst)?;
+/// assert_eq!(deser,Settings{show_tree_tab:true,hide_rest_buttons:false,hide_unused_stats:true,
+///     hide_spells_tab:false,hit_dice_reset_multiplier: None,discord_webhook:None});
+/// # Ok(())
+/// # }
+/// ```
 #[derive(Serialize,Deserialize,Default, PartialEq,Debug,Clone)]
 #[serde(rename_all="camelCase")]
 pub struct Settings{
@@ -35,7 +77,36 @@ pub struct Settings{
     #[serde(default,skip_serializing_if="Option::is_none")]
     pub discord_webhook: Option<String>
 }
-
+/// A structure to deal with a character's overall settings, as represented in the dicecloud v2 api output
+/// #Examples
+/// ```
+/// # use std::error::Error;
+/// # 
+/// # fn main() -> Result<(), Box<dyn Error>> {
+/// use dicecloud_models::data_models::generic_model::{DeathSaveInfo,DenormalizedStats,Settings,CreatureInfo};
+/// 
+/// let tst="{\"_id\":\"eL9cEFSb78iZsBcfJ\",\"owner\":\"3kxb8uaubLnnSFzbJ\",\"name\":\"Raulnor Bogdan\",
+///     \"gender\":\"male\",\"alignment\":\"Neutral Good\",\"allowedLibraries\":[\"8weFtT657czESN8bc\"],
+///     \"allowedLibraryCollections\":[],
+///     \"deathSave\":{\"pass\":0,\"fail\":0,\"canDeathSave\":true,\"stable\":false},
+///     \"denormalizedStats\":{\"xp\":0,\"milestoneLevels\":1},\"type\":\"pc\",\"damageMultipliers\":{},
+///     \"variables\":{},
+///     \"settings\":{\"showTreeTab\":true,\"hitDiceResetMultiplier\":0.6,
+///         \"discordWebhook\":\"https://discord.example.com\"\
+///     },\"readers\":[],\"writers\":[],\"public\":false}";
+/// let deser: CreatureInfo=serde_json::from_str(tst)?;
+/// let death_save = DeathSaveInfo{pass: 0,fail: 0, can_death_save: true, stable:false};
+/// let denormalized_stats = DenormalizedStats{xp: 0,milestone_levels:1};
+/// let settings = Settings{show_tree_tab:true,hide_rest_buttons:false,hide_unused_stats:false,hide_spells_tab:false,hit_dice_reset_multiplier:Some(0.6),discord_webhook:Some("https://discord.example.com".to_string())};
+/// let char_info = CreatureInfo{id:"eL9cEFSb78iZsBcfJ".to_string(),owner: "3kxb8uaubLnnSFzbJ".to_string()
+///     ,name: "Raulnor Bogdan".to_string(),gender: "male".to_string(),
+///     alignment:"Neutral Good".to_string(),allowed_libraries:vec!["8weFtT657czESN8bc".to_string()],
+///     allowed_library_collections:vec![],
+///     death_save, denormalized_stats,typ: "pc".to_string(),settings,readers: vec![],writers: vec![],public:false,
+///     picture: None,avatar_picture: None};
+/// assert_eq!(deser,char_info);
+/// # Ok(())
+/// # }
 #[derive(Serialize, Deserialize,PartialEq,Debug,Default,Clone)]
 #[serde(rename_all="camelCase")]
 pub struct CreatureInfo{
@@ -64,6 +135,23 @@ pub struct CreatureInfo{
 }
 #[derive(Serialize,Deserialize,PartialEq,Debug,Clone)]
 #[serde(untagged,rename_all="camelCase")]
+/// A structure that represents a value an attribute or constant can take
+/// #Examples
+/// ```
+/// # use std::error::Error;
+/// # 
+/// # fn main() -> Result<(), Box<dyn Error>> {
+/// use dicecloud_models::data_models::generic_model::PropVal;
+/// 
+/// let first: PropVal = serde_json::from_str("false")?;
+/// assert_eq!(first,PropVal::Boolean(false));
+/// let second: PropVal = serde_json::from_str("10.6")?;
+/// assert_eq!(second,PropVal::Fraction(10.6));
+/// let third: PropVal = serde_json::from_str("\"test\"")?;
+/// assert_eq!(third,PropVal::Str("test".to_string()));
+/// # Ok(())
+/// # }
+/// ```
 pub enum PropVal{
     Boolean(bool),
     None(Option<bool>),
@@ -77,18 +165,47 @@ impl Default for PropVal{
     }
 }
 impl PropVal{
+    /// Gets the value as a bool, if it is one
+    /// #Example
+    /// ```
+    /// use dicecloud_models::data_models::generic_model::PropVal;
+    /// let test=PropVal::Boolean(true);
+    /// assert_eq!(test.as_bool(),Some(true));
+    /// let test2=PropVal::Number(10);
+    /// assert_eq!(test2.as_bool(),None);
+    /// ```
     pub fn as_bool(&self)->Option<bool>{
         match self{
             PropVal::Boolean(b)=>Some(*b),
             _=>None
         }
     }
+    /// Gets the value as an integer, if it is one
+    /// #Example
+    /// ```
+    /// use dicecloud_models::data_models::generic_model::PropVal;
+    /// let test=PropVal::Number(10);
+    /// assert_eq!(test.as_i64(),Some(10));
+    /// let test2=PropVal::Boolean(true);
+    /// assert_eq!(test2.as_i64(),None);
+    /// ```
     pub fn as_i64(&self)->Option<i64>{
         match self{
             PropVal::Number(k)=>Some(*k),
             _=>None
         }
     }
+    /// Gets the value as an floating point, if it is number-like
+    /// #Example
+    /// ```
+    /// use dicecloud_models::data_models::generic_model::PropVal;
+    /// let test=PropVal::Number(10);
+    /// assert_eq!(test.as_f64(),Some(10.0));
+    /// let test2=PropVal::Fraction(2.3);
+    /// assert_eq!(test2.as_f64(),Some(2.3));
+    /// let test3=PropVal::Str("test".to_string());
+    /// assert_eq!(test3.as_f64(),None);
+    /// ```
     pub fn as_f64(&self)->Option<f64>{
         match self{
             PropVal::Number(k) => Some(*k as f64),
@@ -108,10 +225,12 @@ impl fmt::Display for PropVal{
         }
     }
 }
+/// wraps a value in a structure (relevant for effects)
 #[derive(Serialize,Deserialize,PartialEq,Debug,Default,Clone)]
 pub struct ValWrap{
     pub value: PropVal
 }
+/// Encapsulates a ParseNode for calculations(notice it is recursive)
 #[derive(Serialize,Deserialize,PartialEq,Debug,Clone)]
 #[serde(rename_all="camelCase",tag="parseType")]
 pub enum ParseNode{

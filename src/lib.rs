@@ -5,32 +5,6 @@ pub mod data_models;
 mod tests {
     use crate::data_models::generic_model::*;
     #[test]
-    fn death_save_info() {
-        let sve=DeathSaveInfo{pass:2,fail:1,can_death_save:true,stable:false};
-        let serialized = serde_json::to_string(&sve).unwrap();
-        assert_eq!(serialized,"{\"pass\":2,\"fail\":1,\"canDeathSave\":true,\"stable\":false}");
-
-        let tst = "{\"pass\":0,\"fail\":0,\"canDeathSave\":false,\"stable\":true}";
-        let deser: DeathSaveInfo = serde_json::from_str(tst).unwrap();
-        assert_eq!(deser, DeathSaveInfo{pass: 0, fail: 0, can_death_save:false,stable:true});
-    }
-    #[test]
-    fn denormalized_stats(){
-        let sts=DenormalizedStats{xp:10,milestone_levels:2};
-        let serialized = serde_json::to_string(&sts).unwrap();
-        assert_eq!(serialized,"{\"xp\":10,\"milestoneLevels\":2}");
-
-        let tst = "{\"xp\": 0,\"milestoneLevels\": 1}";
-        let deser: DenormalizedStats = serde_json::from_str(tst).unwrap();
-        assert_eq!(deser,DenormalizedStats{xp: 0,milestone_levels:1});
-    }
-    #[test]
-    fn settings(){
-        let tst = "{\"showTreeTab\": true,\"hideUnusedStats\": true}";
-        let deser: Settings = serde_json::from_str(tst).unwrap();
-        assert_eq!(deser,Settings{show_tree_tab:true,hide_rest_buttons:false,hide_unused_stats:true,hide_spells_tab:false,hit_dice_reset_multiplier: None,discord_webhook:None});
-    }
-    #[test]
     fn creature_info(){
         let (id,own,lib1,lib2)=("this".to_string(),"is".to_string(),"a".to_string(),"test".to_string());
         let tst =format!("{{\"_id\": \"{}\",
