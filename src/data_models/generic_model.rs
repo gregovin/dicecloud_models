@@ -293,6 +293,8 @@ pub struct ParseError{
 /// # use std::error::Error;
 /// # 
 /// # fn main() -> Result<(), Box<dyn Error>> {
+/// use dicecloud_models::data_models::generic_model::Calculation;
+/// 
 /// let tst = "{\"calculation\": \"dne ? 1 : 0\",\"_key\": \"baseValue\",\"type\": \"_calculation\",
 ///     \"hash\": 5843567941511658,\"parseNode\": {
 ///         \"parseType\": \"if\",\"condition\": {\"parseType\": \"symbol\",\"name\": \"dne\"},
@@ -343,7 +345,7 @@ pub struct SimpleCalc{
 /// # use std::error::Error;
 /// # 
 /// # fn main() -> Result<(), Box<dyn Error>> {
-/// use dicecloud_modes::data_models::generic_model::Identifier;
+/// use dicecloud_models::data_models::generic_model::Identifier;
 /// 
 /// let tst="{\"collection\": \"creatures\",\"id\": \"cRdjQ9HKMzsBcBTSE\"}";
 /// let deser: Identifier = serde_json::from_str(tst)?;
@@ -364,7 +366,7 @@ pub struct Identifier{
 /// # use std::error::Error;
 /// # 
 /// # fn main() -> Result<(), Box<dyn Error>> {
-/// use dicecloud_modes::data_models::generic_model::CalculatedText;
+/// use dicecloud_models::data_models::generic_model::CalculatedText;
 /// 
 /// let tst="{\"text\": \"test\",\"inlineCalculations\": [],\"value\": \"test\",\"hash\": 8030999935138279}";
 /// let deser: CalculatedText = serde_json::from_str(tst)?;
@@ -387,7 +389,7 @@ pub struct CalculatedText{
 /// # use std::error::Error;
 /// # 
 /// # fn main() -> Result<(), Box<dyn Error>> {
-/// use dicecloud_modes::data_models::generic_model::{Effect,ValWrap,PropVal};
+/// use dicecloud_models::data_models::generic_model::{Effect,ValWrap,PropVal};
 /// 
 /// let tst = "{\"_id\": \"CtRdeuSYYZCJGD2B2\",\"name\": \"Strength\",\"operation\": \"base\",
 ///     \"amount\": {\"value\": 18},\"type\": \"attribute\"}";
@@ -413,7 +415,23 @@ pub struct Effect{
 }
 /// Represents amunition as used by actions
 /// 
+/// # Example
+/// ```
+/// # use std::error::Error;
+/// # 
+/// # fn main() -> Result<(), Box<dyn Error>> {
+/// use dicecloud_models::data_models::generic_model::{ConsumedItem,PropVal};
 /// 
+/// let tst= "{\"_id\": \"6pPXAjyf5rDwnDe3Y\",\"tag\": \"bolt\",\"quantity\": {
+///         \"calculation\": \"1\",\"hash\": 1485272252048968,\"parseNode\": {
+///             \"parseType\": \"constant\",\"valueType\": \"number\",\"value\": 1
+///         },\"parseError\": null,\"_key\": \"resources.itemsConsumed[0].quantity\",
+///         \"type\": \"_calculation\",\"errors\": [],\"value\": 1}}";
+/// let deser: ConsumedItem= serde_json::from_str(tst)?;
+/// assert_eq!(deser.quantity.map(|c|c.value),Some(PropVal::Number(1)));
+/// # Ok(())
+/// # }
+/// ```
 #[derive(Serialize,Deserialize,PartialEq,Debug,Default,Clone)]
 #[serde(rename_all="camelCase")]
 pub struct ConsumedItem{
@@ -426,6 +444,28 @@ pub struct ConsumedItem{
     #[serde(default,skip_serializing_if="Option::is_none")]
     pub item_id: Option<String>
 }
+/// Represents a resource consumed by an action
+/// 
+/// # Example
+/// ```
+/// # use std::error::Error;
+/// # 
+/// # fn main() -> Result<(), Box<dyn Error>> {
+/// use dicecloud_models::data_models::generic_model::{ConsumedResource,PropVal};
+/// 
+/// let tst="{\"_id\": \"sytmBu7ArJ8eiygCJ\",\"variableName\": \"beansRemaining\",\"quantity\": {
+///         \"calculation\": \"beansRemaining.value\",\"hash\": 7917483338722648,\"parseNode\": {
+///             \"parseType\": \"accessor\",\"path\": [\"value\"],\"name\": \"beansRemaining\"
+///         },\"parseError\": null,\"_key\": \"resources.attributesConsumed[0].quantity\",
+///         \"type\": \"_calculation\",\"errors\": [{
+///             \"type\": \"error\",\"message\": \"beansRemaining.value not found, set to 0\"
+///         }],\"value\": 0}}";
+/// let deser: ConsumedResource= serde_json::from_str(tst)?;
+/// assert_eq!(deser.variable_name,Some("beansRemaining".to_string()));
+/// assert_eq!(deser.quantity.map(|c|c.value),Some(PropVal::Number(0)));
+/// # Ok(())
+/// # }
+/// ```
 #[derive(Serialize,Deserialize,PartialEq,Debug,Default,Clone)]
 #[serde(rename_all="camelCase")]
 pub struct ConsumedResource{
@@ -440,14 +480,34 @@ pub struct ConsumedResource{
     #[serde(default)]
     pub stat_name: Option<String>,
 }
+/// Represents ExtraTags, which are used by slot like properties
+/// 
+/// # Examples
+/// ```
+/// # use std::error::Error;
+/// # 
+/// # fn main() -> Result<(), Box<dyn Error>> {
+/// use dicecloud_models::data_models::generic_model::ExtraTag;
+/// 
+/// let tst="{\"_id\": \"R6ch3sxuLSMuwDEuT\",\"operation\": \"OR\",\"tags\": [
+///         \"artificerStartingEquipment\",\"LoV\"]}";
+/// let deser: ExtraTag=serde_json::from_str(tst)?;
+/// assert_eq!(deser,ExtraTag{id:"R6ch3sxuLSMuwDEuT".to_string(),operation: "OR".to_string(),
+///     tags:vec!["artificerStartingEquipment".to_string(),"LoV".to_string()]});
+/// # Ok(())
+/// # }
+/// ```
 #[derive(Serialize,Deserialize,PartialEq,Eq,Debug,Default,Clone,Hash)]
 #[serde(rename_all="camelCase")]
 pub struct ExtraTag{
     #[serde(rename="_id")]
-    id: String,
-    operation: String,
-    tags: Vec<String>
+    pub id: String,
+    pub operation: String,
+    pub tags: Vec<String>
 }
+/// Represents resources consumed by an action
+/// 
+/// Uses ConsumedItem and ConsumedResource
 #[derive(Serialize,Deserialize,PartialEq,Debug,Default,Clone)]
 #[serde(rename_all="camelCase")]
 pub struct Resource{

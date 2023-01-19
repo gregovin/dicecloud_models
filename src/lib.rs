@@ -70,12 +70,4 @@ mod tests {
                 base_value: None, effects: vec![]};
         assert_eq!(deser, calc);
     }
-    #[test]
-    fn effect(){
-        let tst = "{\"_id\": \"CtRdeuSYYZCJGD2B2\",\"name\": \"Strength\",\"operation\": \"base\",
-            \"amount\": {\"value\": 18},\"type\": \"attribute\"}";
-        let deser: Effect = serde_json::from_str(tst).unwrap();
-        assert_eq!(deser, Effect{id:"CtRdeuSYYZCJGD2B2".to_string(),name:Some("Strength".to_string()),
-            operation: "base".to_string(),amount: ValWrap{value: PropVal::Number(18)},typ: Some("attribute".to_string())});
-    }
 }
