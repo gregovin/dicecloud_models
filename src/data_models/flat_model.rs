@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use crate::data_models::generic_model::*;
+use crate::data_models::tree_model::TreeCharacter;
 use serde::{Serialize,Deserialize};
 #[derive(Serialize, Deserialize,PartialEq,Debug,Default,Clone)]
 #[serde(rename_all="camelCase")]
@@ -49,4 +50,15 @@ pub struct FlatCharacter{
     pub creatures: Vec<CreatureInfo>,
     pub creature_properties: Vec<FlatProp>,
     pub creature_variables: Vec<HashMap<String, CharacterVar>>
+}
+impl FlatCharacter{
+    pub fn from_tree_char(tree_char: TreeCharacter)->FlatCharacter{
+        let creatures= tree_char.creatures;
+        let creature_variables=tree_char.creature_variables;
+        let mut creature_properties: Vec<FlatProp> = Vec::new();
+        for prop in tree_char.creature_properties_tmap.into_values(){
+            prop.flatten(&mut creature_properties);
+        }
+        FlatCharacter { creatures, creature_properties, creature_variables}
+    }
 }

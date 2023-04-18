@@ -1,6 +1,8 @@
 use std::collections::HashMap;
+use std::collections::hash_map::{Values, Entry};
 
 use crate::data_models::generic_model::*;
+use crate::data_models::flat_model::{FlatCharacter,FlatProp};
 use serde::{Serialize,Deserialize};
 
 #[derive(Serialize, Deserialize,PartialEq,Debug,Default,Clone)]
@@ -62,11 +64,11 @@ impl TreeProp{
             removed_with: p.removed_with,
             dirty: p.dirty,
             migration_error: p.migration_error,
-            childern: HashMap::new()
+            child_map: HashMap::new()
         }
     }
-    pub fn as_flat_prop(self)->FlatProp{
-        FlatProp{
+    pub fn as_flat_prop(self)->(FlatProp,Vec<TreeProp>){
+        (FlatProp{
             id: self.id,
             prop_type:self.prop_type,
             tags: self.tags,
@@ -85,25 +87,32 @@ impl TreeProp{
             removed_with: self.removed_with,
             dirty: self.dirty,
             migration_error: self.migration_error
+        },self.child_map.into_values().collect())
+    }
+    pub(crate) fn flatten(self,working: &mut Vec<FlatProp>){
+        let flt = self.as_flat_prop();
+        working.push(flt.0);
+        for prp in flt.1{
+            prp.flatten(working);
         }
     }
     pub fn add_child(&mut self, child: TreeProp){
         self.child_map.insert(child.id.clone(),child);
     }
-    pub fn recurse_insert(&mut self, rel_path: I, prop: TreeProp)
-    where I: IntoIterator<String>
+    pub fn recurse_insert<I>(&mut self, rel_path: I, prop: TreeProp)
+    where I: IntoIterator<Item=String>
     {
         let mut piter = rel_path.into_iter();
         let id = piter.next();
         if let Some(t)=id{
-            self.child_map.entry(t).and_modify(|p| p.recurse_insert(piter,prop))
-                .or_insert(|| {
-                    let p = TreeProp::default();
-                    p.recurse_insert(piter,prop);
-                    p})
+            self.child_map.entry(t).or_insert(TreeProp::default())
+                .recurse_insert(piter, prop);
         } else {
             self.add_child(prop);
         }
+    }
+    pub fn children(&self)->Values<String,TreeProp>{
+        self.child_map.values()
     }
 }
 impl PartialOrd for TreeProp{
@@ -123,14 +132,15 @@ impl TreeCharacter{
         let creatures = ch.creatures;
         let mut creature_properties=ch.creature_properties;
         let creature_variables=ch.creature_variables;
-        creature_properties.sort();
-        let mut creature_properties_tmap=HashMap::new();
+        creature_properties.sort_by(|a,b|a.partial_cmp(b).unwrap());
+        let mut creature_properties_tmap:HashMap<String, TreeProp>=HashMap::new();
         for prop in creature_properties{
-            let mut path = prop.ancestors.iter().cloned().map(|anc|anc.id);
-            let _ = path.next(); //always the character id
-            if let Some(id) =  path.next(){
-                creature_properties_tmap.entry(id)
-                    .and_modify(|p| p.recurse_insert(path,TreeProp::from_flat_prop(prop)));
+            let path: Vec<String> = prop.ancestors.iter().map(|anc|anc.id.clone()).collect();
+            if let Some(id) =  path.get(1){
+                creature_properties_tmap.entry(id.clone())
+                    .and_modify(|p: &mut TreeProp| 
+                        p.recurse_insert(path,
+                            TreeProp::from_flat_prop(prop)));
             } else {
                 creature_properties_tmap.insert(prop.id.clone(),TreeProp::from_flat_prop(prop));
             }
