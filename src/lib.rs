@@ -1,12 +1,12 @@
 //! A crate which provides the datamodels for dicecloud version 2
 //!
 //! Allows importing of character jsons into rust types and vice versa
-//! # Examples
-//! ```
-//! use crate::FlatCharacter;
+//! # Usage
+//! ``` no_test
+//! use dicecloud_models::FlatCharacter;
 //! let character_string = {...} //get the character json as a String, somehow
 //! 
-//! let character: FlatCharacter = serde_json::from_str(&character_string)?;
+//! let character = FlatCharacter::from_json(&character_string);
 //! // process character
 //! ````
 //! The key structs this provides are [`FlatCharacter`][crate::FlatCharacter] and [`FlatProp`][crate::FlatProp]
@@ -17,10 +17,9 @@ pub mod data_models;
 pub use crate::data_models::generic_model::*;
 pub use crate::data_models::flat_model::{FlatProp,FlatCharacter};
 pub use crate::data_models::tree_model::{TreeProp,TreeCharacter};
-#[cfg(test)]
-#[cfg(feature="serde_json")]
+#[cfg(all(test,feature="serde_json"))]
 mod tests {
-    use crate::data_models::generic_model::*;
+    use super::*;
     #[test]
     fn prop_val(){
         let tst1="1";

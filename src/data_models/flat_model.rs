@@ -49,15 +49,6 @@ impl PartialOrd for FlatProp{
 /// represents an entire character from dicecloud
 /// 
 /// Does so in a flat way(ie as returned by the API)
-/// # Examples
-#[cfg_attr(doctest, doc = " ````no_test")]
-/// ```
-/// use crate::FlatCharacter;
-/// let character_string = {...} //get the character json as a String, somehow
-/// 
-/// let character: FlatCharacter = serde_json::from_str(&character_string)?;
-/// // process character
-/// ````
 /// Use `creature_variables` if you just want to process the variables for a creature
 /// 
 /// Or `creature_properties` if you need the properties
@@ -82,5 +73,24 @@ impl FlatCharacter{
             prop.flatten(&mut creature_properties);
         }
         Self { creatures, creature_properties, creature_variables}
+    }
+    /// Convert json return from dcv2 into a flat character
+    /// 
+    /// # Errors
+    /// If the json is not valid or doesn't fit the expected format
+    /// # Examples
+    #[cfg_attr(doctest, doc = " ````no_test")]
+    /// ```
+    /// use crate::FlatCharacter;
+    /// let character_string = {...} //get the character json as a String, somehow
+    /// 
+    /// let character = FlatCharacter::from_json(&character_string);
+    /// // process character
+    /// ````
+
+    #[cfg(feature="serde_json")]
+    #[allow(clippy::use_self)]
+    pub fn from_json(json: &str)->serde_json::Result<FlatCharacter>{
+        serde_json::from_str(json)
     }
 }
