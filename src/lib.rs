@@ -11,7 +11,7 @@
 //! ````
 //! The key structs this provides are [`FlatCharacter`][crate::FlatCharacter] and [`FlatProp`][crate::FlatProp]
 //! 
-//! However this crate allows converting the standard flat representation to a [`TreeCharacter`][crate::TreeCharacter]
+//! This crate also allows converting the standard flat representation to a [`TreeCharacter`][crate::TreeCharacter]
 pub mod data_models;
 
 pub use crate::data_models::generic_model::*;
