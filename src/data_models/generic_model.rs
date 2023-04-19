@@ -7,6 +7,7 @@ use serde::{Serialize,Deserialize};
 #[derive(Serialize, Deserialize,PartialEq,Eq,Debug,Default,Hash,Clone,Copy)]
 /// A structure to store the death save info as in the creature settings
 /// 
+/// Probably Not relevant for importers
 /// #Example
 /// ```
 /// # use std::error::Error;
@@ -27,7 +28,7 @@ pub struct DeathSaveInfo{
     pub can_death_save: bool,
     pub stable: bool
 }
-/// A structure to store the denormalized stats as in the creature settings
+/// A structure to store the denormalized stats(such as xp and milestone levels) as in the creature settings
 /// 
 /// #Example
 /// ```
@@ -48,7 +49,7 @@ pub struct DenormalizedStats{
     pub milestone_levels: usize,
     pub xp: usize,
 }
-/// A structure to deal with a character's advanced settings
+/// A structure to deal with a character's advanced settings, such as wether to show the tree tab
 /// 
 /// #Example
 /// ```
@@ -66,6 +67,7 @@ pub struct DenormalizedStats{
 /// ```
 #[derive(Serialize,Deserialize,Default, PartialEq,Debug,Clone)]
 #[serde(rename_all="camelCase")]
+#[allow(clippy::struct_excessive_bools)]
 pub struct Settings{
     #[serde(default)]
     pub show_tree_tab: bool,
@@ -159,18 +161,19 @@ pub struct CreatureInfo{
 /// ```
 pub enum PropVal{
     Boolean(bool),
-    None(Option<bool>),
+    ///This variant should always be PropVal::None(None)
+    None(Option<()>),
     Number(i64),
     Fraction(f64),
     Str(String),
 }
 impl Default for PropVal{
-    fn default()->PropVal{
-        PropVal::Number(0)
+    fn default()->Self{
+        Self::Number(0)
     }
 }
 impl PropVal{
-    /// Gets the value as a bool, if it is one
+    /// Gets the value as a bool, if it is a bool
     /// 
     /// #Example
     /// ```
@@ -180,13 +183,14 @@ impl PropVal{
     /// let test2=PropVal::Number(10);
     /// assert_eq!(test2.as_bool(),None);
     /// ```
-    pub fn as_bool(&self)->Option<bool>{
+    #[must_use]
+    pub const fn as_bool(&self)->Option<bool>{
         match self{
-            PropVal::Boolean(b)=>Some(*b),
+            Self::Boolean(b)=>Some(*b),
             _=>None
         }
     }
-    /// Gets the value as an integer, if it is one
+    /// Gets the value as an integer, if it is an integer
     /// 
     /// #Example
     /// ```
@@ -196,13 +200,14 @@ impl PropVal{
     /// let test2=PropVal::Boolean(true);
     /// assert_eq!(test2.as_i64(),None);
     /// ```
-    pub fn as_i64(&self)->Option<i64>{
+    #[must_use]
+    pub const fn as_i64(&self)->Option<i64>{
         match self{
-            PropVal::Number(k)=>Some(*k),
+            Self::Number(k)=>Some(*k),
             _=>None
         }
     }
-    /// Gets the value as an floating point, if it is number-like
+    /// Gets the value as a floating point number, if it is number-like
     /// 
     /// #Example
     /// ```
@@ -214,10 +219,12 @@ impl PropVal{
     /// let test3=PropVal::Str("test".to_string());
     /// assert_eq!(test3.as_f64(),None);
     /// ```
-    pub fn as_f64(&self)->Option<f64>{
+    #[allow(clippy::cast_precision_loss)]
+    #[must_use]
+    pub const fn as_f64(&self)->Option<f64>{
         match self{
-            PropVal::Number(k) => Some(*k as f64),
-            PropVal::Fraction(f) => Some(*f),
+            Self::Number(k) => Some(*k as f64),
+            Self::Fraction(f) => Some(*f),
             _=>None
         }
     }
@@ -225,11 +232,11 @@ impl PropVal{
 impl fmt::Display for PropVal{
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self{
-            PropVal::Boolean(b) => write!(f,"{}",b),
-            PropVal::Fraction(n) => write!(f,"{}",n),
-            PropVal::Number(k)=>write!(f,"{}",k),
-            PropVal::Str(s)=>write!(f,"{}",s),
-            PropVal::None(_)=>write!(f,"null")
+            Self::Boolean(b) => write!(f,"{b}"),
+            Self::Fraction(n) => write!(f,"{n}"),
+            Self::Number(k)=>write!(f,"{k}"),
+            Self::Str(s)=>write!(f,"{s}"),
+            Self::None(_)=>write!(f,"null")
         }
     }
 }
@@ -252,7 +259,7 @@ impl fmt::Display for PropVal{
 pub struct ValWrap{
     pub value: PropVal
 }
-/// Encapsulates a ParseNode for calculations.
+/// Encapsulates a `ParseNode` for calculations.
 /// 
 /// You probably don't need to look at this
 #[derive(Serialize,Deserialize,PartialEq,Debug,Clone)]
@@ -273,12 +280,12 @@ pub enum ParseNode{
     UnaryOperator{operator: String, right: Box<ParseNode>},
 }
 impl Default for ParseNode{
-    fn default()->ParseNode{
-        ParseNode::Constant{value_type:"number".to_string(),value: PropVal::default()}
+    fn default()->Self{
+        Self::Constant{value_type:"number".to_string(),value: PropVal::default()}
     }
 }
 #[derive(Serialize,Deserialize,PartialEq,Eq,Debug,Default,Hash,Clone)]
-/// Encapsulates a ParseError for calculations
+/// Encapsulates a `ParseError` for calculations
 /// 
 /// You probably don't need to look at this
 pub struct ParseError{
@@ -288,6 +295,7 @@ pub struct ParseError{
 }
 /// Represents a Calculation as in a calculated field
 /// 
+/// If you need this you should look at the value field
 /// #Example
 /// ```
 /// # use std::error::Error;
@@ -338,7 +346,7 @@ pub struct SimpleCalc{
     pub errors: Vec<ParseError>,
     pub value: PropVal,
 }
-/// Represents an identifier (ie for parent, ancestors)
+/// Represents an identifier (ie for parent and ancestors fields)
 /// 
 /// #Example
 /// ```
@@ -382,7 +390,7 @@ pub struct CalculatedText{
     pub hash: i64,
     pub inline_calculations: Vec<SimpleCalc>
 }
-/// Represents the effect field on an attribute(not an effect property)
+/// Represents an effect on an attribute(not an effect property)
 /// 
 /// #Example
 /// ```
@@ -480,7 +488,7 @@ pub struct ConsumedResource{
     #[serde(default)]
     pub stat_name: Option<String>,
 }
-/// Represents ExtraTags, which are used by slot like properties
+/// Represents the `ExtraTags` field, which is used by slot like properties for tag logic
 /// 
 /// # Examples
 /// ```
@@ -505,21 +513,23 @@ pub struct ExtraTag{
     pub operation: String,
     pub tags: Vec<String>
 }
-/// Represents resources consumed by an action
-/// 
-/// Uses ConsumedItem and ConsumedResource
+/// Represents the total resources consumed by an action(including attributes and items)
 #[derive(Serialize,Deserialize,PartialEq,Debug,Default,Clone)]
 #[serde(rename_all="camelCase")]
 pub struct Resource{
-    items_consumed: Vec<ConsumedItem>,
-    attributes_consumed: Vec<ConsumedResource>,
+    pub items_consumed: Vec<ConsumedItem>,
+    pub attributes_consumed: Vec<ConsumedResource>,
 }
+/// Represents an Icon in the api
+/// 
+/// Note that shape is just the raw svg
 #[derive(Serialize,Deserialize,PartialEq,Eq,Debug,Default,Clone,Hash)]
 #[serde(rename_all="camelCase")]
 pub struct Icon{
     pub name: String,
     pub shape: String,
 }
+/// Enum that describes the type of branch for a branch property
 #[derive(Serialize,Deserialize,PartialEq,Debug,Clone)]
 #[serde(rename_all="camelCase",tag="branchType")]
 pub enum BranchType{
@@ -532,6 +542,7 @@ pub enum BranchType{
     SuccessfulSave{},
     Random{}
 }
+/// Represents a row for a point buy property
 #[derive(Serialize,Deserialize,PartialEq,Debug,Default,Clone)]
 #[serde(rename_all="camelCase")]
 pub struct PointBuyRow{
@@ -547,6 +558,7 @@ pub struct PointBuyRow{
     #[serde(default)] spent: i64,
     #[serde(default)] errors: Vec<ParseError>,
 }
+/// Enum describes the types of attributes and assosiated properties
 #[derive(Serialize,Deserialize,PartialEq,Debug,Clone)]
 #[serde(rename_all="camelCase",tag="attributeType")]
 pub enum AttributeType{
@@ -576,16 +588,12 @@ impl Default for AttributeType{
     }
 }
 #[derive(Serialize,Deserialize,PartialEq,Eq,Debug,Default,Clone,Hash)]
-pub struct Refer{
-    pub id:String,
-    pub collection:String
-}
-#[derive(Serialize,Deserialize,PartialEq,Eq,Debug,Default,Clone,Hash)]
 pub struct Cache{
     pub error: String
 }
 #[derive(Serialize,Deserialize,PartialEq,Debug,Clone)]
 #[serde(rename_all="camelCase",tag="type")]
+/// an enum that encodes the various property types
 pub enum PropType{
     Action{#[serde(default)] name: String,
         #[serde(default,skip_serializing_if="Option::is_none")]summary: Option<CalculatedText>,
@@ -711,7 +719,7 @@ pub enum PropType{
         #[serde(rename="hideWhenFull")] hide_when_full: bool,unique: String,
         #[serde(rename="totalFilled",default)] total_filled: i64,
         #[serde(rename="spaceLeft",default,skip_serializing_if="Option::is_none")] space_left: Option<i64>},
-    Reference{#[serde(rename="ref")] refer: Refer,cache: Cache},
+    Reference{#[serde(rename="ref")] refer: Identifier,cache: Cache},
     Roll{#[serde(default)] name: String, #[serde(rename="variableName")] variable_name: String,
         #[serde(default,skip_serializing_if="Option::is_none")] roll: Option<Calculation>,
         #[serde(default)] silent: bool},
@@ -796,6 +804,7 @@ impl Default for PropType{
         Self::Folder { name: String::default(), group_stats: false, hide_stats_group: None, location: None, tab: None }
     }
 }
+/// Enum representing different types of variables in the `creatureVariables` field
 #[derive(Serialize,Deserialize,PartialEq,Debug,Clone)]
 #[serde(rename_all="camelCase",tag="type")]
 pub enum VariableType{
@@ -840,6 +849,7 @@ pub enum VariableType{
         #[serde(rename="deactivatedBySelf",default)] deactivated_by_self: bool},
 }
 impl Eq for VariableType{}
+/// Represents a variable in the `creatureVariables` field
 #[derive(Serialize,Deserialize,PartialEq,Eq,Debug,Clone)]
 #[serde(rename_all="camelCase")]
 pub struct GenericVariable{
@@ -851,7 +861,7 @@ pub struct GenericVariable{
     #[serde(default)] library_tags: Vec<String>,
     #[serde(default,skip_serializing_if="Option::is_none")] library_node_id: Option<String>,
 }
-
+/// represents a thing in the `creatureVariables` field
 #[derive(Serialize,Deserialize,PartialEq,Eq,Debug,Clone)]
 #[serde(rename_all="camelCase",untagged)]
 pub enum CharacterVar{

@@ -1,8 +1,10 @@
 use std::collections::HashMap;
 
-use crate::data_models::generic_model::*;
+use crate::data_models::generic_model::{CharacterVar, CreatureInfo, Icon, Identifier, PropType};
 use crate::data_models::tree_model::TreeCharacter;
 use serde::{Serialize,Deserialize};
+
+/// Represents all the details of a property as represented by dicecloud
 #[derive(Serialize, Deserialize,PartialEq,Debug,Default,Clone)]
 #[serde(rename_all="camelCase")]
 pub struct FlatProp{
@@ -44,6 +46,21 @@ impl PartialOrd for FlatProp{
         self.order.partial_cmp(&other.order)
     }
 }
+/// represents an entire character from dicecloud
+/// 
+/// Does so in a flat way(ie as returned by the API)
+/// # Examples
+#[cfg_attr(doctest, doc = " ````no_test")]
+/// ```
+/// use crate::FlatCharacter;
+/// let character_string = {...} //get the character json as a String, somehow
+/// 
+/// let character: FlatCharacter = serde_json::from_str(&character_string)?;
+/// // process character
+/// ````
+/// Use `creature_variables` if you just want to process the variables for a creature
+/// 
+/// Or `creature_properties` if you need the properties
 #[derive(Serialize, Deserialize,PartialEq,Default,Clone)]
 #[serde(rename_all="camelCase")]
 pub struct FlatCharacter{
@@ -52,6 +69,11 @@ pub struct FlatCharacter{
     pub creature_variables: Vec<HashMap<String, CharacterVar>>
 }
 impl FlatCharacter{
+    /// Convert a character in tree form back to its standard flat form.
+    /// 
+    /// Usefull if you want to make changes in tree form and then re-export
+    #[allow(clippy::use_self)]
+    #[must_use]
     pub fn from_tree_char(tree_char: TreeCharacter)->FlatCharacter{
         let creatures= tree_char.creatures;
         let creature_variables=tree_char.creature_variables;
@@ -59,6 +81,6 @@ impl FlatCharacter{
         for prop in tree_char.creature_properties_tmap.into_values(){
             prop.flatten(&mut creature_properties);
         }
-        FlatCharacter { creatures, creature_properties, creature_variables}
+        Self { creatures, creature_properties, creature_variables}
     }
 }

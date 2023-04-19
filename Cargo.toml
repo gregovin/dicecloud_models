@@ -13,9 +13,5 @@ exclude = ["main.rs"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-serde = {version="1.0.147",features = ["derive"] }
+serde = {version="1.0.147",features = ["derive"]}
 serde_json = {version="1.0.89",optional = true}
-
-[features]
-dnd_models=["serde_json"]
-default=["serde_json"]
