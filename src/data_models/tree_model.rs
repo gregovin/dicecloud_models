@@ -4,7 +4,10 @@ use std::collections::hash_map::{Values, ValuesMut};
 use crate::data_models::generic_model::{CharacterVar, CreatureInfo, Icon, Identifier, PropType};
 use crate::data_models::flat_model::{FlatCharacter,FlatProp};
 use serde::{Serialize,Deserialize};
-
+/// an iterator over references to the children of a node
+pub type Children<'a> = Values<'a,String,TreeProp>;
+/// An iterator over mutable references to the children of a node
+pub type ChildrenMut<'a>= ValuesMut<'a,String,TreeProp>;
 /// Represents a property as it appears on the tree, by building children under parents
 #[derive(Serialize, Deserialize,PartialEq,Debug,Default,Clone)]
 #[serde(rename_all="camelCase")]
@@ -123,11 +126,11 @@ impl TreeProp{
     }
     /// Returns an iterator over references to the children
     #[must_use]
-    pub fn children(&self)->Values<String,Self>{
+    pub fn children(&self)->Children{
         self.child_map.values()
     }
     /// Returns an iterator over mutible references to the children
-    pub fn children_mut(&mut self)->ValuesMut<String,Self>{
+    pub fn children_mut(&mut self)->ChildrenMut{
         self.child_map.values_mut()
     }
     /// Takes the children out from the node, returning them as a vec and leaving nothing behind
@@ -140,6 +143,10 @@ impl PartialOrd for TreeProp{
         self.order.partial_cmp(&other.order)
     }
 }
+/// An iterator over references to the roots of a node
+pub type Roots<'a> = Values<'a,String,TreeProp>;
+/// An iterator over mutable references to the roots of a node
+pub type RootsMut<'a> = ValuesMut<'a, String, TreeProp>;
 /// Represents a full character whose properties are in tree form
 #[derive(Serialize, Deserialize,PartialEq,Default,Clone)]
 #[serde(rename_all="camelCase")]
@@ -182,11 +189,11 @@ impl TreeCharacter{
     }
     /// Returns an iterator over references to the roots of the tree
     #[must_use]
-    pub fn roots(&self)->Values<String,TreeProp>{
+    pub fn roots(&self)->Roots{
         self.creature_properties_tmap.values()
     }
     /// Returns an iterator over mutable references to the roots of the tree
-    pub fn roots_mut(&mut self)->ValuesMut<String,TreeProp>{
+    pub fn roots_mut(&mut self)->RootsMut{
         self.creature_properties_tmap.values_mut()
     }
     /// Takes the roots out of the tree, returning them as a list
