@@ -6,21 +6,6 @@ use serde::{Serialize,Deserialize};
 
 #[derive(Serialize, Deserialize,PartialEq,Eq,Debug,Default,Hash,Clone,Copy)]
 /// A structure to store the death save info as in the creature settings
-/// 
-/// Probably Not relevant for importers
-/// #Example
-/// ```
-/// # use std::error::Error;
-/// # 
-/// # fn main() -> Result<(), Box<dyn Error>> {
-/// use dicecloud_models::data_models::generic_model::DeathSaveInfo;
-/// 
-/// let tst = "{\"pass\":0,\"fail\":0,\"canDeathSave\":false,\"stable\":true}";
-/// let deser: DeathSaveInfo = serde_json::from_str(tst)?;
-/// assert_eq!(deser, DeathSaveInfo{pass: 0, fail: 0, can_death_save:false,stable:true});
-/// # Ok(())
-/// # }
-/// ```
 pub struct DeathSaveInfo{
     pub pass: usize,
     pub fail: usize,
@@ -29,20 +14,6 @@ pub struct DeathSaveInfo{
     pub stable: bool
 }
 /// A structure to store the denormalized stats(such as xp and milestone levels) as in the creature settings
-/// 
-/// #Example
-/// ```
-/// # use std::error::Error;
-/// # 
-/// # fn main() -> Result<(), Box<dyn Error>> {
-/// use dicecloud_models::data_models::generic_model::DenormalizedStats;
-/// 
-/// let tst = "{\"xp\": 0,\"milestoneLevels\": 1}";
-/// let deser: DenormalizedStats = serde_json::from_str(tst)?;
-/// assert_eq!(deser,DenormalizedStats{xp: 0,milestone_levels:1});
-/// # Ok(())
-/// # }
-/// ```
 #[derive(Serialize,Deserialize, PartialEq,Eq,Debug,Default,Hash,Clone,Copy,PartialOrd, Ord)]
 pub struct DenormalizedStats{
     #[serde(rename = "milestoneLevels")]
@@ -50,21 +21,6 @@ pub struct DenormalizedStats{
     pub xp: usize,
 }
 /// A structure to deal with a character's advanced settings, such as wether to show the tree tab
-/// 
-/// #Example
-/// ```
-/// # use std::error::Error;
-/// # 
-/// # fn main() -> Result<(), Box<dyn Error>> {
-/// use dicecloud_models::data_models::generic_model::Settings;
-/// 
-/// let tst = "{\"showTreeTab\": true,\"hideUnusedStats\": true}";
-/// let deser: Settings = serde_json::from_str(tst)?;
-/// assert_eq!(deser,Settings{show_tree_tab:true,hide_rest_buttons:false,hide_unused_stats:true,
-///     hide_spells_tab:false,hit_dice_reset_multiplier: None,discord_webhook:None});
-/// # Ok(())
-/// # }
-/// ```
 #[derive(Serialize,Deserialize,Default, PartialEq,Debug,Clone)]
 #[serde(rename_all="camelCase")]
 #[allow(clippy::struct_excessive_bools)]
@@ -83,36 +39,6 @@ pub struct Settings{
     pub discord_webhook: Option<String>
 }
 /// A structure to deal with a character's overall settings
-/// 
-/// #Examples
-/// ```
-/// # use std::error::Error;
-/// # 
-/// # fn main() -> Result<(), Box<dyn Error>> {
-/// use dicecloud_models::data_models::generic_model::{DeathSaveInfo,DenormalizedStats,Settings,CreatureInfo};
-/// 
-/// let tst="{\"_id\":\"eL9cEFSb78iZsBcfJ\",\"owner\":\"3kxb8uaubLnnSFzbJ\",\"name\":\"Raulnor Bogdan\",
-///     \"gender\":\"male\",\"alignment\":\"Neutral Good\",\"allowedLibraries\":[\"8weFtT657czESN8bc\"],
-///     \"allowedLibraryCollections\":[],
-///     \"deathSave\":{\"pass\":0,\"fail\":0,\"canDeathSave\":true,\"stable\":false},
-///     \"denormalizedStats\":{\"xp\":0,\"milestoneLevels\":1},\"type\":\"pc\",\"damageMultipliers\":{},
-///     \"variables\":{},
-///     \"settings\":{\"showTreeTab\":true,\"hitDiceResetMultiplier\":0.6,
-///         \"discordWebhook\":\"https://discord.example.com\"\
-///     },\"readers\":[],\"writers\":[],\"public\":false}";
-/// let deser: CreatureInfo=serde_json::from_str(tst)?;
-/// let death_save = DeathSaveInfo{pass: 0,fail: 0, can_death_save: true, stable:false};
-/// let denormalized_stats = DenormalizedStats{xp: 0,milestone_levels:1};
-/// let settings = Settings{show_tree_tab:true,hide_rest_buttons:false,hide_unused_stats:false,hide_spells_tab:false,hit_dice_reset_multiplier:Some(0.6),discord_webhook:Some("https://discord.example.com".to_string())};
-/// let char_info = CreatureInfo{id:"eL9cEFSb78iZsBcfJ".to_string(),owner: "3kxb8uaubLnnSFzbJ".to_string()
-///     ,name: "Raulnor Bogdan".to_string(),gender: "male".to_string(),
-///     alignment:"Neutral Good".to_string(),allowed_libraries:vec!["8weFtT657czESN8bc".to_string()],
-///     allowed_library_collections:vec![],
-///     death_save, denormalized_stats,typ: "pc".to_string(),settings,readers: vec![],writers: vec![],public:false,
-///     picture: None,avatar_picture: None};
-/// assert_eq!(deser,char_info);
-/// # Ok(())
-/// # }
 #[derive(Serialize, Deserialize,PartialEq,Debug,Default,Clone)]
 #[serde(rename_all="camelCase")]
 pub struct CreatureInfo{
@@ -139,7 +65,7 @@ pub struct CreatureInfo{
     #[serde(default,skip_serializing_if="Option::is_none")]
     pub avatar_picture: Option<String>
 }
-#[derive(Serialize,Deserialize,PartialEq,Debug,Clone)]
+#[derive(Serialize,Deserialize,Debug,Clone)]
 #[serde(untagged,rename_all="camelCase")]
 /// A structure that represents a value an attribute or constant can take
 /// 
@@ -161,11 +87,23 @@ pub struct CreatureInfo{
 /// ```
 pub enum PropVal{
     Boolean(bool),
-    ///This variant should always be PropVal::None(None)
+    ///This variant should always be `PropVal::None(None)`, though if it is `PropVal::Some(())` reencoding won't break anything
     None(Option<()>),
     Number(i64),
     Fraction(f64),
     Str(String),
+}
+impl PartialEq for PropVal{
+    fn eq(&self, other: &Self) -> bool {
+        match  (&self,other) {
+            (PropVal::Boolean(b1),PropVal::Boolean(b2))=>b1.eq(b2),
+            (PropVal::None(_),PropVal::None(_))=>true,
+            (PropVal::Number(n1),PropVal::Number(n2))=>n1.eq(n2),
+            (PropVal::Fraction(f1),PropVal::Fraction(f2))=>f1.eq(f2),
+            (PropVal::Str(s1),PropVal::Str(s2))=>s1.eq(s2),
+            (_,_)=>false
+        }
+    }
 }
 impl Default for PropVal{
     fn default()->Self{
@@ -241,20 +179,6 @@ impl fmt::Display for PropVal{
     }
 }
 /// Wraps a value in a structure (relevant for effects)
-/// 
-/// #Example
-/// ```
-/// # use std::error::Error;
-/// # 
-/// # fn main() -> Result<(), Box<dyn Error>> {
-/// use dicecloud_models::data_models::generic_model::{PropVal,ValWrap};
-/// 
-/// let tst="{\"value\":1}";
-/// let deser: ValWrap = serde_json::from_str(tst)?;
-/// assert_eq!(deser,ValWrap{value: PropVal::Number(1)});
-/// # Ok(())
-/// # }
-/// ```
 #[derive(Serialize,Deserialize,PartialEq,Debug,Default,Clone)]
 pub struct ValWrap{
     pub value: PropVal
@@ -295,25 +219,7 @@ pub struct ParseError{
 }
 /// Represents a Calculation as in a calculated field
 /// 
-/// If you need this you should look at the value field
-/// #Example
-/// ```
-/// # use std::error::Error;
-/// # 
-/// # fn main() -> Result<(), Box<dyn Error>> {
-/// use dicecloud_models::data_models::generic_model::Calculation;
-/// 
-/// let tst = "{\"calculation\": \"dne ? 1 : 0\",\"_key\": \"baseValue\",\"type\": \"_calculation\",
-///     \"hash\": 5843567941511658,\"parseNode\": {
-///         \"parseType\": \"if\",\"condition\": {\"parseType\": \"symbol\",\"name\": \"dne\"},
-///         \"consequent\": {\"parseType\": \"constant\",\"valueType\": \"number\",\"value\": 1},
-///         \"alternative\": {\"parseType\": \"constant\",\"valueType\": \"number\",\"value\": 0}},
-///     \"parseError\": null,\"errors\": [{\"type\": \"info\",\"message\": \"dne not found, set to 0\"}],
-///     \"value\": 0}";
-/// let deser: Calculation = serde_json::from_str(tst)?;
-/// print!("{}",deser.value);
-/// # Ok(())
-/// # }
+/// The value field is probably what you want to look at
 /// ```
 #[derive(Serialize,Deserialize,PartialEq,Debug, Default,Clone)]
 #[serde(rename_all="camelCase")]
@@ -333,6 +239,8 @@ pub struct Calculation{
     pub effects: Vec<Effect>
 }
 /// A simpler version of the calculation type for calculated text fields.
+/// 
+/// You probably don't need this
 #[derive(Serialize,Deserialize,PartialEq,Debug, Default,Clone)]
 #[serde(rename_all="camelCase")]
 pub struct SimpleCalc{
@@ -347,20 +255,6 @@ pub struct SimpleCalc{
     pub value: PropVal,
 }
 /// Represents an identifier (ie for parent and ancestors fields)
-/// 
-/// #Example
-/// ```
-/// # use std::error::Error;
-/// # 
-/// # fn main() -> Result<(), Box<dyn Error>> {
-/// use dicecloud_models::data_models::generic_model::Identifier;
-/// 
-/// let tst="{\"collection\": \"creatures\",\"id\": \"cRdjQ9HKMzsBcBTSE\"}";
-/// let deser: Identifier = serde_json::from_str(tst)?;
-/// assert_eq!(deser,Identifier{id:"cRdjQ9HKMzsBcBTSE".to_string(),collection:"creatures".to_string()});
-/// # Ok(())
-/// # }
-/// ```
 #[derive(Serialize,Deserialize,PartialEq,Eq,Debug, Default,Hash,Clone)]
 #[serde(rename_all="camelCase")]
 pub struct Identifier{
@@ -369,19 +263,7 @@ pub struct Identifier{
 }
 /// Represents a calculated text field, such as descriptions
 /// 
-/// #Example
-/// ```
-/// # use std::error::Error;
-/// # 
-/// # fn main() -> Result<(), Box<dyn Error>> {
-/// use dicecloud_models::data_models::generic_model::CalculatedText;
-/// 
-/// let tst="{\"text\": \"test\",\"inlineCalculations\": [],\"value\": \"test\",\"hash\": 8030999935138279}";
-/// let deser: CalculatedText = serde_json::from_str(tst)?;
-/// assert_eq!(deser,CalculatedText{text: "test".to_string(),value: "test".to_string(),hash: 8030999935138279, inline_calculations: vec![]});
-/// # Ok(())
-/// # }
-/// ```
+/// value is the final displayed text, text is the initial text with inline calculations
 #[derive(Serialize,Deserialize,PartialEq,Debug, Default,Clone)]
 #[serde(rename_all="camelCase")]
 pub struct CalculatedText{
@@ -391,23 +273,6 @@ pub struct CalculatedText{
     pub inline_calculations: Vec<SimpleCalc>
 }
 /// Represents an effect on an attribute(not an effect property)
-/// 
-/// #Example
-/// ```
-/// # use std::error::Error;
-/// # 
-/// # fn main() -> Result<(), Box<dyn Error>> {
-/// use dicecloud_models::data_models::generic_model::{Effect,ValWrap,PropVal};
-/// 
-/// let tst = "{\"_id\": \"CtRdeuSYYZCJGD2B2\",\"name\": \"Strength\",\"operation\": \"base\",
-///     \"amount\": {\"value\": 18},\"type\": \"attribute\"}";
-/// let deser: Effect = serde_json::from_str(tst)?;
-/// assert_eq!(deser, Effect{id:"CtRdeuSYYZCJGD2B2".to_string(),name:Some("Strength".to_string()),
-///     operation: "base".to_string(),amount: ValWrap{value: PropVal::Number(18)},
-///     typ: Some("attribute".to_string())});
-/// # Ok(())
-/// # }
-/// ```
 #[derive(Serialize,Deserialize,PartialEq,Debug, Default,Clone)]
 #[serde(rename_all="camelCase")]
 pub struct Effect{
@@ -422,24 +287,6 @@ pub struct Effect{
     pub typ: Option<String>,
 }
 /// Represents amunition as used by actions
-/// 
-/// # Example
-/// ```
-/// # use std::error::Error;
-/// # 
-/// # fn main() -> Result<(), Box<dyn Error>> {
-/// use dicecloud_models::data_models::generic_model::{ConsumedItem,PropVal};
-/// 
-/// let tst= "{\"_id\": \"6pPXAjyf5rDwnDe3Y\",\"tag\": \"bolt\",\"quantity\": {
-///         \"calculation\": \"1\",\"hash\": 1485272252048968,\"parseNode\": {
-///             \"parseType\": \"constant\",\"valueType\": \"number\",\"value\": 1
-///         },\"parseError\": null,\"_key\": \"resources.itemsConsumed[0].quantity\",
-///         \"type\": \"_calculation\",\"errors\": [],\"value\": 1}}";
-/// let deser: ConsumedItem= serde_json::from_str(tst)?;
-/// assert_eq!(deser.quantity.map(|c|c.value),Some(PropVal::Number(1)));
-/// # Ok(())
-/// # }
-/// ```
 #[derive(Serialize,Deserialize,PartialEq,Debug,Default,Clone)]
 #[serde(rename_all="camelCase")]
 pub struct ConsumedItem{
@@ -450,30 +297,11 @@ pub struct ConsumedItem{
     #[serde(default,skip_serializing_if="Option::is_none")]
     pub quantity: Option<Calculation>,
     #[serde(default,skip_serializing_if="Option::is_none")]
-    pub item_id: Option<String>
+    pub item_id: Option<String>,
+    #[serde(default,skip_serializing_if="Option::is_none")]
+    pub item_name: Option<String>
 }
 /// Represents a resource consumed by an action
-/// 
-/// # Example
-/// ```
-/// # use std::error::Error;
-/// # 
-/// # fn main() -> Result<(), Box<dyn Error>> {
-/// use dicecloud_models::data_models::generic_model::{ConsumedResource,PropVal};
-/// 
-/// let tst="{\"_id\": \"sytmBu7ArJ8eiygCJ\",\"variableName\": \"beansRemaining\",\"quantity\": {
-///         \"calculation\": \"beansRemaining.value\",\"hash\": 7917483338722648,\"parseNode\": {
-///             \"parseType\": \"accessor\",\"path\": [\"value\"],\"name\": \"beansRemaining\"
-///         },\"parseError\": null,\"_key\": \"resources.attributesConsumed[0].quantity\",
-///         \"type\": \"_calculation\",\"errors\": [{
-///             \"type\": \"error\",\"message\": \"beansRemaining.value not found, set to 0\"
-///         }],\"value\": 0}}";
-/// let deser: ConsumedResource= serde_json::from_str(tst)?;
-/// assert_eq!(deser.variable_name,Some("beansRemaining".to_string()));
-/// assert_eq!(deser.quantity.map(|c|c.value),Some(PropVal::Number(0)));
-/// # Ok(())
-/// # }
-/// ```
 #[derive(Serialize,Deserialize,PartialEq,Debug,Default,Clone)]
 #[serde(rename_all="camelCase")]
 pub struct ConsumedResource{
@@ -489,22 +317,6 @@ pub struct ConsumedResource{
     pub stat_name: Option<String>,
 }
 /// Represents the `ExtraTags` field, which is used by slot like properties for tag logic
-/// 
-/// # Examples
-/// ```
-/// # use std::error::Error;
-/// # 
-/// # fn main() -> Result<(), Box<dyn Error>> {
-/// use dicecloud_models::data_models::generic_model::ExtraTag;
-/// 
-/// let tst="{\"_id\": \"R6ch3sxuLSMuwDEuT\",\"operation\": \"OR\",\"tags\": [
-///         \"artificerStartingEquipment\",\"LoV\"]}";
-/// let deser: ExtraTag=serde_json::from_str(tst)?;
-/// assert_eq!(deser,ExtraTag{id:"R6ch3sxuLSMuwDEuT".to_string(),operation: "OR".to_string(),
-///     tags:vec!["artificerStartingEquipment".to_string(),"LoV".to_string()]});
-/// # Ok(())
-/// # }
-/// ```
 #[derive(Serialize,Deserialize,PartialEq,Eq,Debug,Default,Clone,Hash)]
 #[serde(rename_all="camelCase")]
 pub struct ExtraTag{
@@ -550,11 +362,9 @@ pub struct PointBuyRow{
     id: String,
     #[serde(default)]
     name: String,
-    #[serde(default,skip_serializing_if="Option::is_none")] variable_name: Option<String>,
+    #[serde(default,skip_serializing_if="Option::is_none")]
+    variable_name: Option<String>,
     #[serde(default)] value: i64,
-    #[serde(default,skip_serializing_if="Option::is_none")] min: Option<Calculation>,
-    #[serde(default,skip_serializing_if="Option::is_none")] max: Option<Calculation>,
-    #[serde(default,skip_serializing_if="Option::is_none")] cost: Option<Calculation>, 
     #[serde(default)] spent: i64,
     #[serde(default)] errors: Vec<ParseError>,
 }
@@ -566,8 +376,7 @@ pub enum AttributeType{
         #[serde(default,skip_serializing_if="Option::is_none")] proficiency: Option<f64>},
     HealthBar{#[serde(rename="healthBarColorMid",default,skip_serializing_if="Option::is_none")]
         health_bar_color_mid: Option<String>,
-        #[serde(rename="healthBarColorLow",default)] health_bar_color_low: Option<String>,
-        #[serde(rename="healthBarNoDamag",default)] health_bar_no_damage: bool,
+        #[serde(rename="healthBarNoDamage",default)] health_bar_no_damage: bool,
         #[serde(rename="healthBarNoHealing",default)] health_bar_no_healing: bool,
         #[serde(rename="healthBarNoDamageOverflow",default)] health_bar_no_damage_overflow: bool,
         #[serde(rename="healthBarNoHealingOverflow",default)] health_bar_no_healing_overflow: bool,
@@ -587,6 +396,9 @@ impl Default for AttributeType{
         Self::Utility {}
     }
 }
+/// Represents a cache for errors on ref properties
+/// 
+/// Don't worry about this
 #[derive(Serialize,Deserialize,PartialEq,Eq,Debug,Default,Clone,Hash)]
 pub struct Cache{
     pub error: String
@@ -594,6 +406,7 @@ pub struct Cache{
 #[derive(Serialize,Deserialize,PartialEq,Debug,Clone)]
 #[serde(rename_all="camelCase",tag="type")]
 /// an enum that encodes the various property types
+/// 
 pub enum PropType{
     Action{#[serde(default)] name: String,
         #[serde(default,skip_serializing_if="Option::is_none")]summary: Option<CalculatedText>,
